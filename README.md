@@ -1,0 +1,58 @@
+# CORTE DE VENTAS · Venejugos 2015
+
+Tablero del corte de facturación diario por coordinación, con histórico de cada corte registrado.
+Misma familia visual que GLOBAL KPI (Manrope, azul y rojo Venejugos), con modo oscuro e impresión A4.
+
+| Archivo | Para qué sirve |
+|---|---|
+| `index.html` | **Corte del día** (cuadro de seguimiento, indicadores y gráficas) e **Histórico** de cortes registrados. |
+| `admin.html` | **Panel administrativo**: carga de archivos, registro del corte y publicación en GitHub. Llave: **DIGIMARKET2026**. |
+| `data/corte.json` | Último corte procesado (todos los días del archivo de ventas). |
+| `data/historial.json` | Registros congelados de cada corte. Lo publica el panel administrativo. |
+| `icono.svg` | Ícono de CORTE DE VENTAS. |
+
+SheetJS y Chart.js van incrustados en las páginas: no necesitan instalación.
+
+## Uso diario
+
+1. Abre `admin.html` y escribe la llave.
+2. Suelta los Excel: ventas del corte, maestro de clientes y, si lo tienes, `SEGUIMIENTO_DIARIO.xlsx`
+   (de ahí se toman los comentarios de MobilVendor y las órdenes por facturar).
+3. **Procesar corte** y revisa la vista previa.
+4. Elige el día, marca **Parcial** (corte durante el día) o **Cierre del día**, agrega una nota si quieres y pulsa **Registrar corte**.
+5. Si la conexión con GitHub está configurada, se publica solo. Si no, usa **Publicar ahora** o descarga los JSON y súbelos a `data/`.
+
+## Histórico
+
+- Cada registro guarda cómo quedó el cuadro del día en ese momento: asesores, coordinaciones, venta, devoluciones,
+  clientes atendidos, cumplimiento, marcas y clientes con mayor compra. Cambios posteriores en los archivos no lo alteran.
+- Se pueden hacer varios registros del mismo día (por ejemplo, mediodía y cierre). En la página Histórico, las variaciones
+  de los indicadores comparan con el registro anterior del mismo día.
+- La gráfica y la matriz de asesores usan, por día, el cierre más reciente; si el día no tiene cierre, el último parcial.
+- Un registro con error se **anula** (✕) con motivo opcional: queda tachado y fuera de la gráfica y la matriz. Se puede **restaurar**.
+- Al publicar, el histórico se une con el que ya está en el repositorio, así que nunca se pierden registros.
+- Cada registro tiene enlace propio: `index.html#registro-<id>`.
+
+## Publicar en GitHub Pages
+
+1. Crea un repositorio propio (por ejemplo `Venejugosserver/CORTE-DE-VENTAS`) y sube todo el contenido de esta carpeta.
+2. **Settings → Pages → Source: Deploy from a branch → main / (root)**.
+3. Crea un token de alcance fino solo para ese repositorio con **Contents: Read and write**.
+4. En el panel administrativo, tarjeta **Publicar en GitHub**, escribe `usuario/repositorio`, rama, carpeta `data` y el token.
+
+Las llaves de almacenamiento del navegador usan el prefijo `vjc_`, así que conviven con GLOBAL KPI (`vjp_`, `vjm_`) en el mismo dominio.
+
+## Reglas de cálculo
+
+- **Visita PRG**: clientes del maestro con `DIA DE VISITA` igual al día, sin estatus INACTIVO, CERRADO, CAMBIO DE RAZON SOCIAL ni VACACIONES.
+  Anthony Chacón, Liliana Romero y Directo Oficina en 0; Venejugos Empleados en guion.
+- **Clientes atendidos**: RIF con venta neta positiva en el día.
+- **Fuera de ruta**: atendidos cuyo día de visita en el maestro no es el día del corte.
+- **Órdenes**: clientes con orden por facturar; su monto se suma a la venta del día.
+- **Visitas comentadas**: clientes distintos con comentario del asesor en MobilVendor ese día.
+- **CUMPL%** = (visitas comentadas + órdenes + atendidos en ruta) ÷ visita PRG.
+- **Venta y devolución**: suma de `total_venta_dolar` por tipo, sin DISTRIBUIDORA BIGOTT (cigarros, aparte), CHOCOLATES ST. MORITZ ni #N/A.
+
+---
+
+Venejugos 2015 · CORTE DE VENTAS
