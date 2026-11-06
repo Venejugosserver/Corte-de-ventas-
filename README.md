@@ -5,10 +5,10 @@ Misma familia visual que GLOBAL KPI (Manrope, azul y rojo Venejugos), con modo o
 
 | Archivo | Para qué sirve |
 |---|---|
-| `index.html` | **Tablero** (cuadro de seguimiento, indicadores, líneas y marcas, gráficas, con filtros) e **Histórico** de cortes registrados. |
+| `index.html` | **Corte del día** (cuadro de seguimiento, indicadores y gráficas) e **Histórico** de cortes registrados. |
 | `admin.html` | **Panel administrativo**: carga de archivos, registro del corte y publicación en GitHub. Llave: **DIGIMARKET2026**. |
-| `data/corte.json` | Último corte procesado (todos los días del archivo de ventas). |
-| `data/historial.json` | Registros congelados de cada corte. Lo publica el panel administrativo. |
+| `corte.json` | Último corte procesado (todos los días del archivo de ventas). |
+| `historial.json` | Registros congelados de cada corte. Lo publica el panel administrativo. |
 | `icono.svg` | Ícono de CORTE DE VENTAS. |
 
 SheetJS y Chart.js van incrustados en las páginas: no necesitan instalación.
@@ -16,31 +16,27 @@ SheetJS y Chart.js van incrustados en las páginas: no necesitan instalación.
 ## Uso diario
 
 1. Abre `admin.html` y escribe la llave.
-2. Suelta los Excel: **ventas de MobilVendor** (ReporteGeneral, hoja Ventas), **ventas de Módulo B**, maestro de clientes y,
-   si lo tienes, `SEGUIMIENTO_DIARIO.xlsx` (de ahí se toman los comentarios de MobilVendor y las órdenes por facturar).
-   La venta se calcula cruzando los dos archivos de ventas; ya no hace falta armar el consolidado en Excel.
-   Si un archivo de MobilVendor cae en la casilla equivocada (ventas u órdenes), usa **Es de órdenes / Son ventas** para moverlo.
+2. Suelta los Excel: ventas del corte, maestro de clientes y, si lo tienes, `SEGUIMIENTO_DIARIO.xlsx`
+   (de ahí se toman los comentarios de MobilVendor y las órdenes por facturar).
 3. **Procesar corte** y revisa la vista previa.
 4. Elige el día, marca **Parcial** (corte durante el día) o **Cierre del día**, agrega una nota si quieres y pulsa **Registrar corte**.
-5. Si la conexión con GitHub está configurada, se publica solo. Si no, usa **Publicar ahora** o descarga los JSON y súbelos a `data/`.
+5. Si la conexión con GitHub está configurada, se publica solo. Si no, usa **Publicar ahora** o descarga los JSON y súbelos a la raíz del repositorio.
 
-## Tablero y filtros
+## Líneas de servicio
 
-- **Fechas**: calendario por intervalo. Toca el primer día y luego el último, o usa un atajo (último día, últimos 7 días,
-  esta semana, este mes, mes anterior, todo el período). Los días con punto rojo tienen datos.
-- El período une el **corte publicado** (manda en sus días) con los **cierres del histórico** de los demás días.
-- **Coordinación** y **Vendedor**: selección múltiple; los vendedores se agrupan por coordinación y la lista se reduce a las
-  coordinaciones elegidas. El cuadro muestra solo esas filas y los totales se recalculan.
-- **Línea** (unidad de negocio) y **Marca**: selección múltiple con buscador. La lista muestra solo lo vendido en el período.
-  Con estos filtros, venta, devolución, clientes atendidos y fuera de ruta son solo de esa selección; visita programada,
-  órdenes y visitas comentadas no se separan por línea, así que el cumplimiento es referencial (el tablero lo avisa).
-- **Líneas y marcas**: tabla con venta, devolución, neto, participación, clientes y número de marcas. Toca una línea para
-  ver sus marcas; **Solo esta** aplica el filtro directo.
-- **Descargar Excel** baja el cuadro filtrado y una hoja con líneas y marcas.
-- Coordinación, vendedor, línea y marca se recuerdan en el navegador; las fechas vuelven siempre al último día con datos.
-- El detalle por línea y marca se guarda en `corte.json` y en cada registro del histórico desde esta versión. Los cortes
-  procesados antes no lo tienen: se ven en el cuadro y se filtran por vendedor, pero no por línea ni marca
-  (vuelve a procesarlos para tenerlo). La marca sale de `DescrFamilia` en MobilVendor y de `marca` en Módulo B.
+En *Corte del día* y en *Histórico* hay tres botones de **Línea**:
+
+- **Sin cigarros**: el cuadro original del Excel, sin DISTRIBUIDORA BIGOTT ni cigarrera.
+- **Todas las líneas**: todas las unidades de negocio, cigarros incluidos.
+- **Bigott y cigarrera**: solo cigarros (unidad de negocio Bigott o cigarrera, o línea de tabaco), con el desglose por marca.
+
+La elección se recuerda en el navegador. Las visitas programadas y comentadas son las mismas en las tres vistas; cambian la venta,
+las devoluciones, los clientes atendidos, las órdenes y el cumplimiento.
+
+## Clientes excluidos
+
+**INLUVENCA** queda fuera de todos los cálculos (ventas, órdenes y maestro). La lista está en `CLIENTES_EXCLUIDOS` dentro de
+`index.html` y `admin.html`; el panel administrativo avisa cuántas líneas y cuánto monto se excluyeron.
 
 ## Histórico
 
@@ -55,10 +51,12 @@ SheetJS y Chart.js van incrustados en las páginas: no necesitan instalación.
 
 ## Publicar en GitHub Pages
 
-1. Crea un repositorio propio (por ejemplo `Venejugosserver/CORTE-DE-VENTAS`) y sube todo el contenido de esta carpeta.
+1. Crea un repositorio propio (por ejemplo `Venejugosserver/CORTE-DE-VENTAS`) y sube los seis archivos sueltos en la raíz
+   (*Add file → Upload files*, selecciónalos todos). No hace falta ninguna carpeta.
 2. **Settings → Pages → Source: Deploy from a branch → main / (root)**.
 3. Crea un token de alcance fino solo para ese repositorio con **Contents: Read and write**.
-4. En el panel administrativo, tarjeta **Publicar en GitHub**, escribe `usuario/repositorio`, rama, carpeta `data` y el token.
+4. En el panel administrativo, tarjeta **Publicar en GitHub**, escribe `usuario/repositorio`, rama y token. Deja vacía la carpeta de datos:
+   el panel actualiza `corte.json` e `historial.json` en la raíz.
 
 Las llaves de almacenamiento del navegador usan el prefijo `vjc_`, así que conviven con GLOBAL KPI (`vjp_`, `vjm_`) en el mismo dominio.
 
@@ -67,32 +65,12 @@ Las llaves de almacenamiento del navegador usan el prefijo `vjc_`, así que conv
 - **Visita PRG**: clientes del maestro con `DIA DE VISITA` igual al día, sin estatus INACTIVO, CERRADO, CAMBIO DE RAZON SOCIAL ni VACACIONES.
   Anthony Chacón, Liliana Romero y Directo Oficina en 0; Venejugos Empleados en guion.
 - **Clientes atendidos**: RIF con venta neta positiva en el día.
-- **Fuera de ruta**: atendidos cuyo día de visita en el maestro no es el día del corte.
-- **Órdenes**: clientes con orden por facturar; su monto se suma a la venta del día.
+- **Fuera de ruta**: por defecto igual que el Excel (fuera de ruta = clientes atendidos). Con la casilla *Fuera de ruta real* del panel, son los atendidos cuyo día de visita en el maestro no es el día del corte.
+- **Órdenes**: clientes con orden por facturar. Igual que en el Excel, su monto se suma al **TOTAL VENTA DIARIA $** del día del corte (último día del archivo de ventas). El indicador de venta muestra el desglose facturado + órdenes.
 - **Visitas comentadas**: clientes distintos con comentario del asesor en MobilVendor ese día.
-- **CUMPL%** = (visitas comentadas + órdenes + atendidos en ruta) ÷ visita PRG.
-- **Venta y devolución**: suma por tipo, sin DISTRIBUIDORA BIGOTT (cigarros, aparte), CHOCOLATES ST. MORITZ ni #N/A.
-
-### Cruce de ventas (MobilVendor + Módulo B)
-
-| | MobilVendor (ReporteGeneral) | Módulo B |
-|---|---|---|
-| Se reconoce por | `RucCliente`, `NombreVend`, `PrecioTotal` y `CodTrans` VT/NC | `total_venta_dolar` y `rif`, sin columnas calculadas |
-| Fecha | `FechaFactura` | `fecha` |
-| Monto $ | `PrecioTotal` (sin IVA) | `total_venta_dolar` |
-| Devolución | `CodTrans` = NC (documentos NCTE…) | monto negativo |
-| Cliente | `RucCliente` | `rif` |
-| Unidad de negocio | `CodMarca` (NIM → NESTLE, BIG → DISTRIBUIDORA BIGOTT…) | `unidad_negocio` (INDUSTRIAS JAU → FRUGY…) |
-
-- Los números de documento de los dos módulos no se repiten, así que se suman directo. Si alguno aparece en los dos, el panel avisa.
-- **Asesor**, en este orden: venta propia del vendedor (Liliana Romero; Directo, Anthony Urreta → Directo Oficina;
-  Yeimy Martínez, Carlos Patriarca y la ruta D11 → Venejugos Empleados), luego el maestro por RIF y, si el cliente no está
-  en el maestro, el grupo del cliente o el vendedor de la factura (Televentas → Mary Suárez).
-  Si un RIF está en varias carteras del maestro, se usa la del asesor que aparece en la factura.
-- **Cigarros**: unidad DISTRIBUIDORA BIGOTT solo si la línea es tabaco o cigarrillos; los yesqueros BIC cuentan en la venta.
-- La lista de venta propia (`VENTA_PROPIA`) y las equivalencias de marcas (`ALIAS_UN`) están al inicio de la sección
-  *Ventas: MobilVendor + Módulo B* de `admin.html` e `index.html` (el bloque de lógica es el mismo en las dos páginas).
-- El consolidado anterior (`ventas_corte.xlsx`) todavía se acepta, pero solo se usa si no se cargó ninguno de los dos archivos.
+- **CUMPL%** = (visitas comentadas + órdenes + atendidos en ruta) ÷ visita PRG. En el modo Excel, los atendidos en ruta quedan en 0.
+- **Órdenes por vendedor**: se agrupan por `NombreVend`, como la tabla dinámica del Excel; las de Anthony Chacón no se cuentan (el Excel las oculta). En la vista *Sin cigarros* las órdenes entran completas, igual que en el Excel.
+- **Venta y devolución**: suma de `total_venta_dolar` por tipo, sin DISTRIBUIDORA BIGOTT (cigarros, aparte), CHOCOLATES ST. MORITZ ni #N/A.
 
 ---
 

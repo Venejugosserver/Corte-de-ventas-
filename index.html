@@ -205,68 +205,6 @@ table.lista{width:100%;border-collapse:collapse;font-size:.84rem}
 .reg.anul{opacity:.6}
 .reg.anul .h,.reg.anul .v{text-decoration:line-through}
 .sel-medida{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
-
-/* ---------- Filtros del tablero ---------- */
-.filtros{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
-.filtro{position:relative;display:flex;flex-direction:column;gap:2px}
-.filtro>.lbl{padding-left:2px}
-.sel{display:inline-flex;align-items:center;gap:8px;min-width:150px;max-width:240px;justify-content:space-between;border:1.5px solid var(--linea);background:var(--superficie);border-radius:10px;padding:6px 10px;cursor:pointer;font-weight:700;font-size:.85rem;text-align:left}
-.sel span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sel::after{content:"";width:7px;height:7px;border-right:2px solid var(--gris);border-bottom:2px solid var(--gris);transform:rotate(45deg) translateY(-2px);flex:0 0 auto}
-.sel:hover{border-color:var(--azul-med)}
-.sel.activo{border-color:var(--azul);background:var(--azul-claro);color:var(--azul)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .sel.activo{color:#C9D6FF}}
-:root[data-theme="dark"] .sel.activo{color:#C9D6FF}
-.sel.fecha{min-width:210px}
-.limpiar{border:0;background:none;color:var(--gris);text-decoration:underline;cursor:pointer;font-size:.8rem;padding:8px 4px}
-.pop{position:absolute;top:calc(100% + 6px);left:0;z-index:40;background:var(--superficie);border:1px solid var(--linea);border-radius:12px;box-shadow:0 12px 32px rgba(11,42,138,.18);padding:12px;min-width:260px}
-.pop.der{left:auto;right:0}
-.pop input[type=search]{width:100%;border:1.5px solid var(--linea);border-radius:8px;padding:6px 10px;background:var(--superficie-2);margin-bottom:8px;font-size:.85rem}
-.op-lista{max-height:320px;overflow:auto;margin:0 -4px;padding:0 4px}
-.op{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:7px;cursor:pointer;font-size:.85rem;font-weight:600}
-.op:hover{background:var(--azul-claro)}
-.op input{accent-color:var(--azul);width:16px;height:16px;flex:0 0 auto}
-.op small{margin-left:auto;color:var(--gris);font-weight:600;font-size:.74rem;white-space:nowrap}
-.op .pt{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
-.op-grupo{font-size:.72rem;font-weight:800;color:var(--gris);text-transform:uppercase;letter-spacing:.04em;padding:8px 6px 2px}
-.pop-pie{display:flex;gap:8px;justify-content:space-between;border-top:1px solid var(--linea);margin-top:8px;padding-top:8px}
-.pop-pie button{border:0;background:none;color:var(--azul-med);font-weight:700;cursor:pointer;font-size:.8rem;padding:4px}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .pop-pie button{color:#9DB4FF}}
-:root[data-theme="dark"] .pop-pie button{color:#9DB4FF}
-/* Calendario por intervalo */
-.cal-pop{display:flex;gap:14px;min-width:0}
-.cal-pre{display:flex;flex-direction:column;gap:2px;border-right:1px solid var(--linea);padding-right:12px;min-width:140px}
-.cal-pre button{border:0;background:none;text-align:left;padding:6px 8px;border-radius:7px;cursor:pointer;font-weight:600;font-size:.83rem}
-.cal-pre button:hover{background:var(--azul-claro)}
-.cal-cab{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.cal-cab b{font-size:.92rem;text-transform:capitalize}
-.cal-cab button{width:30px;height:30px;border-radius:8px;border:1px solid var(--linea);background:var(--superficie);cursor:pointer;font-weight:800}
-.cal-cab button:disabled{opacity:.35;cursor:default}
-.cal{display:grid;grid-template-columns:repeat(7,36px);gap:2px}
-.cal .dsem{font-size:.7rem;font-weight:800;color:var(--gris);text-align:center;padding:2px 0}
-.cal button{height:34px;border:0;background:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:.84rem;position:relative;color:var(--gris)}
-.cal button.dato{color:var(--tinta)}
-.cal button.dato::after{content:"";position:absolute;left:50%;bottom:4px;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--rojo)}
-.cal button:hover{background:var(--azul-claro)}
-.cal button.en{background:var(--azul-claro);border-radius:0}
-.cal button.ini,.cal button.fin{background:var(--azul);color:#fff;border-radius:8px}
-.cal button.ini::after,.cal button.fin::after{background:#fff}
-.cal button.hoy{outline:1.5px solid var(--azul-med);outline-offset:-2px}
-.cal-nota{font-size:.76rem;color:var(--gris);margin:8px 0 0;max-width:270px}
-@media (max-width:640px){.cal-pop{flex-direction:column}.cal-pre{border-right:0;border-bottom:1px solid var(--linea);padding:0 0 8px;flex-direction:row;flex-wrap:wrap}.pop{position:fixed;left:8px!important;right:8px;top:auto;bottom:8px;max-height:80vh;overflow:auto}}
-/* Líneas y marcas */
-.lineas td.l{cursor:pointer;font-weight:700}
-.lineas td.l::before{content:"▸";display:inline-block;width:1.1em;color:var(--gris);transition:transform .15s}
-.lineas tr.abierta td.l::before{transform:rotate(90deg)}
-.lineas tr.mk td{background:var(--superficie-2)!important;font-size:.8rem}
-.lineas tr.mk td:first-child{padding-left:34px;font-weight:600}
-.lineas .barra-p{display:inline-block;height:6px;border-radius:3px;background:var(--azul-med);vertical-align:middle;margin-right:6px}
-.lineas .tag{font-size:.68rem;font-weight:800;color:#fff;background:#747474;border-radius:99px;padding:1px 7px;margin-left:6px}
-.lineas button.solo{border:0;background:none;color:var(--azul-med);font-weight:700;cursor:pointer;font-size:.76rem;text-decoration:underline}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .lineas button.solo{color:#9DB4FF}}
-:root[data-theme="dark"] .lineas button.solo{color:#9DB4FF}
-.resumen-filtros{font-size:.8rem;color:var(--gris);margin:-6px 0 12px}
-.resumen-filtros b{color:var(--tinta)}
 </style>
 </head>
 <body>
@@ -278,7 +216,7 @@ table.lista{width:100%;border-collapse:collapse;font-size:.84rem}
       <p><b>Venejugos 2015</b> · <span id="subtit">Seguimiento diario por coordinación</span></p>
     </div>
     <nav class="nav" aria-label="Secciones">
-      <a href="#corte" data-v="corte">Tablero</a>
+      <a href="#corte" data-v="corte">Corte del día</a>
       <a href="#historico" data-v="historico">Histórico</a>
       <a href="admin.html" data-v="admin">Panel administrativo</a>
     </nav>
@@ -287,16 +225,12 @@ table.lista{width:100%;border-collapse:collapse;font-size:.84rem}
 </header>
 
 <!-- ============ CORTE DEL DÍA ============ -->
-<section id="v-corte" class="vista" aria-label="Tablero de ventas">
+<section id="v-corte" class="vista" aria-label="Corte del día">
   <div class="cinta no-print"><div class="cinta-in">
-    <div class="filtros" id="filtros">
-      <div class="filtro"><span class="lbl">Fechas</span><button class="sel fecha" id="f-fecha" type="button" aria-haspopup="dialog" aria-expanded="false"><span>—</span></button></div>
-      <div class="filtro"><span class="lbl">Coordinación</span><button class="sel" id="f-coord" type="button" aria-haspopup="listbox" aria-expanded="false"><span>Todas</span></button></div>
-      <div class="filtro"><span class="lbl">Vendedor</span><button class="sel" id="f-vend" type="button" aria-haspopup="listbox" aria-expanded="false"><span>Todos</span></button></div>
-      <div class="filtro"><span class="lbl">Línea</span><button class="sel" id="f-linea" type="button" aria-haspopup="listbox" aria-expanded="false"><span>Todas</span></button></div>
-      <div class="filtro"><span class="lbl">Marca</span><button class="sel" id="f-marca" type="button" aria-haspopup="listbox" aria-expanded="false"><span>Todas</span></button></div>
-      <button class="limpiar" id="f-limpiar" type="button" hidden>Quitar filtros</button>
-    </div>
+    <span class="lbl">Día del corte</span>
+    <div class="chips" id="dias" role="group" aria-label="Día del corte"></div>
+    <span class="lbl">Línea</span>
+    <div class="chips" id="c-lineas" role="group" aria-label="Línea de servicio"></div>
     <div class="der">
       <span class="estado" id="estado"></span>
       <button class="btn linea" id="b-excel" type="button">Descargar Excel</button>
@@ -305,29 +239,21 @@ table.lista{width:100%;border-collapse:collapse;font-size:.84rem}
   </div></div>
   <main>
     <div id="c-contenido">
-      <div class="cab-sec"><h2 id="c-titulo">Tablero</h2><p id="c-info"></p></div>
-      <p class="resumen-filtros" id="c-filtros"></p>
-      <div class="aviso azul" id="c-aviso" hidden></div>
+      <div class="cab-sec"><h2 id="c-titulo">Corte</h2><p id="c-info"></p></div>
       <div class="kpis" id="c-kpis"></div>
       <div class="cuadro"><div class="lomo" id="c-lomo" aria-hidden="true"></div><div class="tabla-wrap"><table class="seg" id="c-tabla"></table></div></div>
       <div class="rej">
-        <div class="tarjeta c12">
-          <h2>Líneas y marcas</h2>
-          <p class="sub" id="n-lineas">Venta por línea (unidad de negocio). Toca una línea para ver sus marcas.</p>
-          <div class="tw" id="lineas"></div>
-        </div>
-        <div class="tarjeta c6"><h2>Venta por línea</h2><p class="sub">Las diez líneas con más venta. Los cigarros Bigott van aparte.</p><div class="grafico alto"><canvas id="g-un"></canvas></div></div>
-        <div class="tarjeta c6"><h2>Venta por marca</h2><p class="sub" id="n-marca">Las quince marcas con más venta.</p><div class="grafico alto"><canvas id="g-marca"></canvas></div></div>
-        <div class="tarjeta c6"><h2>Venta por coordinación</h2><p class="sub">Venta en US$, antes de restar devoluciones.</p><div class="grafico"><canvas id="g-coord"></canvas></div></div>
+        <div class="tarjeta c6"><h2>Venta por coordinación</h2><p class="sub" id="n-coord">Venta del día en US$, antes de restar devoluciones.</p><div class="grafico"><canvas id="g-coord"></canvas></div></div>
         <div class="tarjeta c6"><h2>Cumplimiento por coordinación</h2><p class="sub">Visitas efectivas frente a visitas programadas.</p><div class="grafico"><canvas id="g-cumpl"></canvas></div></div>
         <div class="tarjeta c6"><h2>Venta por asesor</h2><p class="sub">De mayor a menor, con el color de su coordinación.</p><div class="grafico alto"><canvas id="g-asesor"></canvas></div></div>
-        <div class="tarjeta c6"><h2>Clientes con mayor compra</h2><p class="sub" id="n-top">Diez clientes con más venta en el período.</p><div class="tw" id="top"></div></div>
-        <div class="tarjeta c12"><h2>Venta día por día</h2><p class="sub">Venta y devoluciones de cada día del período, con los filtros aplicados.</p><div class="grafico"><canvas id="g-dias"></canvas></div></div>
+        <div class="tarjeta c6"><h2 id="t-un">Venta por unidad de negocio</h2><p class="sub" id="n-un">Las diez con más venta.</p><div class="grafico alto"><canvas id="g-un"></canvas></div></div>
+        <div class="tarjeta c6"><h2>Clientes con mayor compra</h2><p class="sub" id="n-top">Diez clientes con más venta en el día.</p><div class="tw" id="top"></div></div>
+        <div class="tarjeta c6"><h2>Venta diaria del corte</h2><p class="sub">Venta y devoluciones de cada día del archivo cargado.</p><div class="grafico"><canvas id="g-dias"></canvas></div></div>
       </div>
     </div>
     <div class="vacio" id="c-vacio" hidden>
       <h2>Todavía no hay un corte publicado</h2>
-      <p>Carga los archivos de ventas y el maestro de clientes en el panel administrativo. El cuadro se arma solo.</p>
+      <p>Carga el archivo de ventas y el maestro de clientes en el panel administrativo. El cuadro se arma solo.</p>
       <a class="btn azul" href="admin.html">Ir al panel administrativo</a>
     </div>
   </main>
@@ -338,6 +264,8 @@ table.lista{width:100%;border-collapse:collapse;font-size:.84rem}
   <div class="cinta no-print"><div class="cinta-in">
     <label class="lbl" for="h-mes">Mes</label>
     <select id="h-mes" class="btn linea"></select>
+    <span class="lbl">Línea</span>
+    <div class="chips" id="h-lineas" role="group" aria-label="Línea de servicio"></div>
     <div class="der">
       <span class="estado" id="h-estado"></span>
       <button class="btn linea" id="h-excel" type="button">Descargar Excel del registro</button>
@@ -441,8 +369,16 @@ const VJ = (() => {
   // Estatus del maestro que NO cuentan como visita programada (igual que la tabla dinámica del Excel)
   const ESTATUS_EXCLUIDOS = ['INACTIVO', 'CAMBIO DE RAZON SOCIAL', 'CERRADO', 'VACACIONES', ''];
   // Unidades de negocio que el Excel deja fuera de la venta diaria
-  const UN_EXCLUIDAS = ['DISTRIBUIDORA BIGOTT', '#N/A', 'CHOCOLATES ST. MORITZ', ''];
-  const UN_CIGARROS = 'DISTRIBUIDORA BIGOTT';
+  const UN_EXCLUIDAS = ['#N/A', 'CHOCOLATES ST. MORITZ', ''];
+  // Línea Bigott y cigarrera: unidad de negocio Bigott/cigarrera o línea de tabaco
+  const esCigarrera = (un, linea) => /BIGOTT|CIGARR/.test(un) || /TABACO|CIGARR/.test(linea);
+  // Clientes que no se toman en cuenta en ningún cálculo (por nombre o RIF)
+  const CLIENTES_EXCLUIDOS = ['INLUVENCA'];
+  const excluido = (nombre, rif) => CLIENTES_EXCLUIDOS.some(x => norm(nombre).includes(x) || norm(rif) === x);
+  // Vistas por línea de servicio
+  // Como en la tabla dinámica de órdenes del Excel: estas órdenes no se cuentan
+  const ORDENES_EXCLUIDAS = ['ANTHONY CHACON'];
+  const LINEAS = { base: 'Sin cigarros', todas: 'Todas las líneas', cig: 'Bigott y cigarrera' };
   const DIAS = ['DOMINGO', 'LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO'];
 
   const norm = s => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/\s+/g, ' ').trim();
@@ -455,7 +391,6 @@ const VJ = (() => {
     return isFinite(n) ? n : 0;
   };
   const r2 = n => Math.round(n * 100) / 100;
-  const r4 = n => Math.round(n * 10000) / 10000;
 
   // Convierte serial de Excel, Date o texto dd/mm/aaaa a 'AAAA-MM-DD'
   function aISO(v) {
@@ -491,27 +426,11 @@ const VJ = (() => {
   const pick = (col, ...nombres) => { for (const n of nombres) { const k = norm(n); if (k in col) return col[k]; } return -1; };
 
   /* ---------- Detección del tipo de archivo ---------- */
-  // Firma de columnas de cada archivo. Las ventas de MobilVendor y las órdenes por facturar comparten
-  // columnas (RucCliente, NombreVend, PrecioTotal): se separan por CodTrans (VT/NC = facturas) y por el nombre.
   function detectar(filas) {
     if (encabezado(filas, ['RIF', 'ASESOR ACTUAL', 'DIA DE VISITA', 'ESTATUS'])) return 'maestro';
-    if (encabezado(filas, ['total_venta_dolar', 'rif'])) {
-      // El consolidado viejo (ventas_corte) trae columnas calculadas; Módulo B viene crudo
-      return encabezado(filas, ['total_venta_dolar', 'rif', 'ASESOR ACTUAL']) || encabezado(filas, ['total_venta_dolar', 'rif', 'MODULOS']) ? 'ventas' : 'ventasB';
-    }
+    if (encabezado(filas, ['total_venta_dolar', 'rif'])) return 'ventas';
     if (encabezado(filas, ['Ruta (Nombre)', 'Cliente', 'Acción'])) return 'comentarios';
-    const h = encabezado(filas, ['RucCliente', 'NombreVend', 'PrecioTotal']);
-    if (h) {
-      const cT = pick(h.col, 'CodTrans'), cD = pick(h.col, 'DescTrans');
-      if (cT >= 0 || cD >= 0) {
-        for (let i = h.fila + 1; i < filas.length; i++) {
-          const f = filas[i] || [];
-          const t = cT >= 0 ? norm(f[cT]) : '', d = cD >= 0 ? norm(f[cD]) : '';
-          if (t === 'VT' || t === 'NC' || /FACTURA|NOTA CREDITO/.test(d)) return 'ventasMV';
-        }
-      }
-      return 'ordenes';
-    }
+    if (encabezado(filas, ['RucCliente', 'NombreVend', 'PrecioTotal'])) return 'ordenes';
     return null;
   }
 
@@ -521,18 +440,18 @@ const VJ = (() => {
     if (!h) throw new Error('No encontré las columnas RIF, ASESOR ACTUAL, DIA DE VISITA y ESTATUS en el maestro.');
     const c = h.col;
     const cRif = c['RIF'], cAs = c['ASESOR ACTUAL'], cDia = c['DIA DE VISITA'], cEst = c['ESTATUS'];
-    const cSup = pick(c, 'SUPERVISOR');
+    const cSup = pick(c, 'SUPERVISOR'), cCliM = pick(c, 'CLIENTE');
+    const rifsExcluidos = [];
     const clientes = {};            // rif -> [asesor, dia, estatus]
-    const varios = {};              // rif -> todas sus filas, cuando el mismo RIF está en varias carteras
     const prg = {};                 // asesor -> {LUNES: n, ...}
     const supervisorDe = {};
     let total = 0, activos = 0;
     for (let i = h.fila + 1; i < filas.length; i++) {
       const f = filas[i]; if (!f) continue;
       const rif = norm(f[cRif]); if (!rif || rif === 'RIF') continue;
+      if (excluido(cCliM >= 0 ? f[cCliM] : '', rif)) { rifsExcluidos.push(rif); continue; }
       const asesor = norm(f[cAs]); const dia = norm(f[cDia]); const est = norm(f[cEst]);
-      if (clientes[rif]) (varios[rif] = varios[rif] || [clientes[rif]]).push([asesor, dia, est]);
-      else clientes[rif] = [asesor, dia, est];
+      clientes[rif] = [asesor, dia, est];
       total++;
       if (cSup >= 0 && asesor && f[cSup]) supervisorDe[asesor] = norm(f[cSup]);
       if (!ESTATUS_EXCLUIDOS.includes(est) && asesor && dia) {
@@ -541,196 +460,94 @@ const VJ = (() => {
         activos++;
       }
     }
-    return { clientes, varios, prg, supervisorDe, total, activos };
+    return { clientes, prg, supervisorDe, total, activos, rifsExcluidos };
   }
 
-  /* ---------- Ventas: MobilVendor + Módulo B (cruce nativo) ---------- */
-  // Unidad de negocio: primero el catálogo de productos (sale del consolidado de Excel), luego reglas por marca.
-  const ALIAS_UN = {
-    'NIM': 'NESTLE', 'NP': 'NESTLE', 'BIG': 'DISTRIBUIDORA BIGOTT', 'BIGOTT': 'DISTRIBUIDORA BIGOTT', 'CMG': 'ARAUCA',
-    'KKO REAL': 'CACAO REAL', 'PASTORENA': 'LA PASTORENA', 'PUIG': 'GALLETAS PUIG', 'RDIPROPAL': 'REPRESENTACIONES DIPROPAL',
-    'INDUSTRIAS JAU': 'FRUGY', 'MONTALBAN': 'PVA'
-  };
-  // Excepciones del catálogo de productos (Módulo B y MobilVendor) donde la marca del sistema no basta
-  const PRODUCTOS = {"MV:DES_PAGO": "AJUSTES", "MV:DFPRECIOE": "AJUSTES", "MV:DFPRECIO": "AJUSTES", "MV:D/CP2": "AJUSTES", "B:2705": "GALLETAS PUIG", "B:675": "LACTALIS", "B:2470": "OKA LOKA", "B:2297": "DISTRIBUIDORA BIGOTT"};
-  const esTabaco = linea => /TABACO|CIGARR/.test(linea);
-  function unidadNegocio(mod, codprod, crudo, linea) {
-    const k = mod + ':' + norm(codprod);
-    if (k in PRODUCTOS) return PRODUCTOS[k];
-    let un = norm(crudo);
-    un = ALIAS_UN[un] || un;
-    // Bigott también distribuye yesqueros BIC: solo tabaco y cigarrillos van a Cigarros
-    if (un === UN_CIGARROS && linea && !esTabaco(linea)) un = 'BIC';
-    return un || 'SIN CLASIFICAR';
-  }
-  // Vendedores cuya venta es siempre suya, aunque el cliente sea de la cartera de otro asesor
-  // (Liliana vende cigarros a clientes de otras rutas; oficina y empleados facturan por su cuenta).
-  // La ruta D11 es la de empleados. Para agregar un vendedor, escríbelo aquí en mayúsculas y sin acentos.
-  const VENTA_PROPIA = {
-    'LILIANA ROMERO': 'LILIANA ROMERO',
-    'DIRECTO': 'DIRECTO OFICINA', 'DIRECTO OFICINA': 'DIRECTO OFICINA', 'ANTHONY URRETA': 'DIRECTO OFICINA',
-    'VENEJUGOS EMPLEADOS': 'VENEJUGOS EMPLEADOS', 'YEIMY MARTINEZ': 'VENEJUGOS EMPLEADOS', 'CARLOS PATRIARCA': 'VENEJUGOS EMPLEADOS'
-  };
-  const RUTA_EMPLEADOS = 'D11';
-  function ventaPropia(vend, ruta) {
-    const a = VENTA_PROPIA[vend];
-    if (!a) return '';
-    return ruta === RUTA_EMPLEADOS && a === 'DIRECTO OFICINA' ? 'VENEJUGOS EMPLEADOS' : a;
-  }
-  // Grupos o vendedores del sistema que no son un asesor del cuadro
-  const ALIAS_ASESOR = { 'TELEVENTAS': 'MARY SUAREZ', 'DIRECTO': 'DIRECTO OFICINA' };
-  const ASESORES = new Set(COORDINACIONES.flatMap(g => g.asesores));
-  function asesorRespaldo(candidatos) {
-    for (const c of candidatos) if (ASESORES.has(c)) return c;
-    for (const c of candidatos) if (ALIAS_ASESOR[c]) return ALIAS_ASESOR[c];
-    return candidatos.find(Boolean) || 'SIN ASESOR';
-  }
-
-  // MobilVendor · ReporteGeneral (hoja Ventas): VT = factura, NC = nota de crédito (devolución)
-  function normalizarMV(filas) {
-    const h = encabezado(filas, ['RucCliente', 'NombreVend', 'PrecioTotal']);
-    if (!h) throw new Error('No encontré RucCliente, NombreVend y PrecioTotal en el archivo de MobilVendor.');
-    const c = h.col, P = (...n) => pick(c, ...n);
-    const cF = P('FechaFactura'), cDoc = P('NumeroFactura'), cRif = P('RucCliente'), cCli = P('RazonSocial'),
-      cGr = P('GrupoCliente'), cVen = P('NombreVend'), cT = P('CodTrans'), cZona = P('DescZona'),
-      cProd = P('CodProducto'), cMarca = P('CodMarca'), cMarcaD = P('DescrFamilia', 'DescrMarca'), cCat = P('DescrCategoria'), cM = P('PrecioTotal');
-    const out = [];
-    for (let i = h.fila + 1; i < filas.length; i++) {
-      const f = filas[i]; if (!f) continue;
-      const fecha = aISO(f[cF]); if (!fecha) continue;
-      const monto = num(f[cM]);
-      const t = cT >= 0 ? norm(f[cT]) : '';
-      const zona = cZona >= 0 ? norm(f[cZona]).split(' ') : [];
-      const vend = norm(f[cVen]);
-      out.push({
-        mod: 'MOBILVENDOR', fecha, doc: String(f[cDoc] ?? ''), prod: norm(f[cProd]), rif: norm(f[cRif]), cliente: String(f[cCli] ?? '').trim(),
-        candidatos: [norm(f[cGr]), vend], asesor: '', propio: ventaPropia(vend, zona[zona.length - 1] || ''),
-        tipo: t === 'NC' ? 'DEVOLUCION' : t === 'VT' ? 'VENTA' : (monto < 0 ? 'DEVOLUCION' : 'VENTA'),
-        un: unidadNegocio('MV', f[cProd], f[cMarca], cCat >= 0 ? norm(f[cCat]) : ''),
-        marca: (cMarcaD >= 0 ? norm(f[cMarcaD]) : '') || 'SIN MARCA',
-        monto, diaV: DIAS.includes(zona[0]) ? zona[0] : ''
-      });
-    }
-    return out;
-  }
-  // Módulo B: mismo formato del consolidado (sin columnas calculadas). Devolución = monto negativo.
-  function normalizarB(filas, mod = 'B') {
+  /* ---------- Ventas (corte de facturación) ---------- */
+  function procesarVentas(filas, maestro) {
     const h = encabezado(filas, ['total_venta_dolar', 'rif']);
-    if (!h) throw new Error('No encontré total_venta_dolar y rif en el archivo de Módulo B.');
-    const c = h.col, P = (...n) => pick(c, ...n);
-    const cF = P('fecha', 'fechafact'), cDoc = P('documento'), cRif = P('RIF REAL', 'rif'), cCli = P('nomclie'),
-      cVen = P('nomvend'), cAs = P('ASESOR ACTUAL'), cTipo = P('TIPOVTA'), cRuta = P('ruta'), cDiaV = P('DIA DE VISITA'),
-      cProd = P('codprod'), cUN = P('UNIDAD NEGOCIO', 'unidad_negocio'), cLin = P('linea'), cM = P('total_venta_dolar'), cMod = P('MODULOS'), cMar = P('MARCA', 'marca');
-    const out = [];
-    for (let i = h.fila + 1; i < filas.length; i++) {
-      const f = filas[i]; if (!f) continue;
-      const fecha = aISO(f[cF]); if (!fecha) continue;
-      const rif = norm(f[cRif]), monto = num(f[cM]);
-      if (!rif && !monto) continue;
-      let tipo = cTipo >= 0 ? norm(f[cTipo]) : '';
-      if (tipo !== 'VENTA' && tipo !== 'DEVOLUCION') tipo = monto < 0 ? 'DEVOLUCION' : 'VENTA';
-      const asesor = cAs >= 0 ? norm(f[cAs]) : '';
-      const vend = norm(f[cVen]), ruta = cRuta >= 0 ? norm(f[cRuta]) : '';
-      const m = cMod >= 0 && norm(f[cMod]) ? (norm(f[cMod]) === 'B' ? 'B' : 'MOBILVENDOR') : mod;
-      // En el consolidado la unidad ya viene del catálogo; en Módulo B se clasifica aquí
-      const un = cAs >= 0 ? (norm(f[cUN]) || 'SIN CLASIFICAR') : unidadNegocio('B', f[cProd], f[cUN], cLin >= 0 ? norm(f[cLin]) : '');
-      out.push({
-        mod: m, fecha, doc: String(f[cDoc] ?? ''), prod: cProd >= 0 ? norm(f[cProd]) : '', rif, cliente: String(f[cCli] ?? '').trim(),
-        candidatos: ruta === RUTA_EMPLEADOS ? ['VENEJUGOS EMPLEADOS', vend] : [vend], propio: ventaPropia(vend, ruta),
-        asesor: asesor === '#N/A' ? '' : asesor,
-        tipo, un, monto, diaV: cDiaV >= 0 ? norm(f[cDiaV]) : '',
-        marca: (cMar >= 0 ? norm(f[cMar]) : '') || 'SIN MARCA'
-      });
-    }
-    return out;
-  }
+    if (!h) throw new Error('No encontré las columnas total_venta_dolar y rif en el archivo de ventas.');
+    const c = h.col;
+    const cAs = pick(c, 'ASESOR ACTUAL'), cNomV = pick(c, 'nomvend');
+    const cTipo = pick(c, 'TIPOVTA');
+    const cUN = pick(c, 'UNIDAD NEGOCIO', 'unidad_negocio');
+    const cRifReal = pick(c, 'RIF REAL'), cRif = pick(c, 'rif');
+    const cFecha = pick(c, 'fecha', 'fechafact');
+    const cDiaV = pick(c, 'DIA DE VISITA');
+    const cMonto = pick(c, 'total_venta_dolar');
+    const cCli = pick(c, 'nomclie');
+    const cDoc = pick(c, 'documento');
 
-  // Fila del maestro para una línea de venta. Si el RIF está en varias carteras se usa la del asesor
-  // que aparece en la factura; si ninguno coincide, la de un asesor de calle (no de venta propia).
-  const PROPIOS = new Set(Object.values(VENTA_PROPIA));
-  function filaMaestro(maestro, L) {
-    if (!maestro) return null;
-    const opciones = (maestro.varios && maestro.varios[L.rif]) || (maestro.clientes[L.rif] ? [maestro.clientes[L.rif]] : []);
-    const activa = x => !ESTATUS_EXCLUIDOS.includes(x[2]);
-    return opciones.find(x => L.candidatos.includes(x[0]))
-      || opciones.find(x => activa(x) && !PROPIOS.has(x[0]))
-      || opciones.find(x => !PROPIOS.has(x[0]))
-      || opciones[0] || null;
-  }
-  // Une las líneas de todas las fuentes y arma el cuadro por día y asesor
-  function procesarVentas(lineas, maestro) {
+    const cLinea = pick(c, 'LINEA', 'linea');
+    const cMarca = pick(c, 'MARCA', 'marca');
+    const rifsFuera = new Set((maestro && maestro.rifsExcluidos) || []);
     const dias = {};
     const sinAsesor = new Set();
-    const porModulo = {};
-    for (const L of lineas) {
-      const enMaestro = filaMaestro(maestro, L);
-      // Asesor: el consolidado ya lo trae; si no, venta propia del vendedor, luego el maestro (cartera actual)
-      // y, si el cliente no está en el maestro, el grupo o vendedor del archivo
-      let asesor = L.asesor || L.propio || (enMaestro && enMaestro[0] && enMaestro[0] !== '#N/A' ? enMaestro[0] : '');
-      if (!asesor) { asesor = asesorRespaldo(L.candidatos); sinAsesor.add(L.rif); }
-      const diaVisita = enMaestro ? enMaestro[1] : L.diaV;
-      const M = porModulo[L.mod] = porModulo[L.mod] || { lineas: 0, venta: 0, devol: 0, cig: 0, docs: new Set() };
-      M.lineas++; M.docs.add(L.doc);
+    const exclusion = { lineas: 0, monto: 0, clientes: new Set() };
+    let filasLeidas = 0;
+    const nuevoSeg = () => ({ asesores: {}, unidades: {}, clientes: {} });
+    for (let i = h.fila + 1; i < filas.length; i++) {
+      const f = filas[i]; if (!f) continue;
+      const fecha = aISO(f[cFecha]); if (!fecha) continue;
+      const rif = norm(cRifReal >= 0 && f[cRifReal] ? f[cRifReal] : f[cRif]);
+      const monto = num(f[cMonto]);
+      if (!rif && !monto) continue;
+      const cliente = cCli >= 0 ? String(f[cCli] ?? '').trim() : rif;
+      if (rifsFuera.has(rif) || excluido(cliente, rif)) { exclusion.lineas++; exclusion.monto += monto; exclusion.clientes.add(cliente || rif); continue; }
+      filasLeidas++;
+      const enMaestro = maestro && maestro.clientes[rif];
+      let asesor = cAs >= 0 ? norm(f[cAs]) : '';
+      if (!asesor || asesor === '#N/A') asesor = enMaestro ? enMaestro[0] : '';
+      if (!asesor || asesor === '#N/A') { asesor = cNomV >= 0 ? norm(f[cNomV]) : 'SIN ASESOR'; sinAsesor.add(rif); }
+      let tipo = cTipo >= 0 ? norm(f[cTipo]) : '';
+      if (tipo !== 'VENTA' && tipo !== 'DEVOLUCION') tipo = monto < 0 ? 'DEVOLUCION' : 'VENTA';
+      const un = cUN >= 0 ? norm(f[cUN]) : '';
+      const linea = cLinea >= 0 ? norm(f[cLinea]) : '';
+      const diaVisita = enMaestro ? enMaestro[1] : (cDiaV >= 0 ? norm(f[cDiaV]) : '');
 
-      const D = dias[L.fecha] = dias[L.fecha] || { asesores: {}, unidades: {}, clientes: {}, cigarros: 0, docs: new Set(), det: new Map(), nom: {}, dvAR: {} };
-      // Detalle asesor × cliente × línea × marca: permite filtrar por coordinación, vendedor, línea y marca
-      if (L.un === UN_CIGARROS || !UN_EXCLUIDAS.includes(L.un)) {
-        const kd = asesor + '\u0001' + L.rif + '\u0001' + L.un + '\u0001' + (L.marca || 'SIN MARCA');
-        const X = D.det.get(kd) || { v: 0, d: 0, dv: -1 };
-        if (L.un === UN_CIGARROS || L.tipo === 'VENTA') X.v += L.monto; else X.d += L.monto;
-        X.dv = DIAS.indexOf(diaVisita);
-        D.det.set(kd, X);
-        if (!D.nom[L.rif]) D.nom[L.rif] = L.cliente || L.rif;
+      const D = dias[fecha] = dias[fecha] || { seg: { base: nuevoSeg(), todas: nuevoSeg(), cig: nuevoSeg() }, cigarros: 0, docs: new Set() };
+      if (cDoc >= 0 && f[cDoc]) D.docs.add(String(f[cDoc]));
+      const cig = esCigarrera(un, linea);
+      if (cig) D.cigarros += monto;
+      const segs = ['todas'];
+      if (cig) segs.push('cig');
+      else if (!UN_EXCLUIDAS.includes(un)) segs.push('base');
+      for (const sg of segs) {
+        const S = D.seg[sg];
+        const A = S.asesores[asesor] = S.asesores[asesor] || { venta: 0, devol: 0, netoRif: {}, diaRif: {} };
+        if (tipo === 'VENTA') A.venta += monto; else A.devol += monto;
+        A.netoRif[rif] = (A.netoRif[rif] || 0) + monto;
+        A.diaRif[rif] = diaVisita;
+        // En la vista de cigarros el desglose es por marca; en las demás, por unidad de negocio
+        const clave = sg === 'cig' ? (cMarca >= 0 && f[cMarca] ? norm(f[cMarca]) : un) : (un || 'SIN UNIDAD');
+        S.unidades[clave] = (S.unidades[clave] || 0) + monto;
+        const K = S.clientes[rif] = S.clientes[rif] || { n: cliente, a: asesor, v: 0 };
+        K.v += monto;
       }
-      if (L.doc) D.docs.add(L.mod + ':' + L.doc);
-      const A = D.asesores[asesor] = D.asesores[asesor] || { venta: 0, devol: 0, cig: 0, netoRif: {}, diaRif: {} };
-      if (L.un === UN_CIGARROS) { A.cig += L.monto; D.cigarros += L.monto; M.cig += L.monto; continue; }
-      if (UN_EXCLUIDAS.includes(L.un)) continue;
-      if (L.tipo === 'VENTA') { A.venta += L.monto; M.venta += L.monto; } else { A.devol += L.monto; M.devol += L.monto; }
-      A.netoRif[L.rif] = (A.netoRif[L.rif] || 0) + L.monto;
-      A.diaRif[L.rif] = diaVisita;
-      D.dvAR[asesor + '\u0001' + L.rif] = DIAS.indexOf(diaVisita);
-      D.unidades[L.un] = (D.unidades[L.un] || 0) + L.monto;
-      const K = D.clientes[L.rif] = D.clientes[L.rif] || { n: L.cliente || L.rif, a: asesor, v: 0 };
-      K.v += L.monto;
     }
+    // Consolidar por día y por línea
     const salida = {};
     for (const [fecha, D] of Object.entries(dias)) {
       const ds = diaSemana(fecha);
-      const asesores = {};
-      for (const [as, A] of Object.entries(D.asesores)) {
-        let atendidos = 0, fuera = 0;
-        for (const [rif, neto] of Object.entries(A.netoRif)) {
-          if (neto > 0) { atendidos++; if (A.diaRif[rif] !== ds) fuera++; }
+      const lineas = {};
+      for (const [sg, S] of Object.entries(D.seg)) {
+        const asesores = {};
+        for (const [as, A] of Object.entries(S.asesores)) {
+          let atendidos = 0, fuera = 0;
+          for (const [rif, neto] of Object.entries(A.netoRif)) {
+            if (neto > 0) { atendidos++; if (A.diaRif[rif] !== ds) fuera++; }
+          }
+          asesores[as] = { venta: r2(A.venta), devol: r2(A.devol), atendidos, fuera };
         }
-        asesores[as] = { venta: r2(A.venta), devol: r2(A.devol), cig: r2(A.cig), atendidos, fuera };
+        const unidades = Object.entries(S.unidades).map(([k, v]) => [k, r2(v)]).sort((a, b) => b[1] - a[1]);
+        const top = Object.values(S.clientes).sort((a, b) => b.v - a.v).slice(0, 10).map(k => ({ n: k.n, a: k.a, v: r2(k.v) }));
+        lineas[sg] = { asesores, unidades, top };
       }
-      const unidades = Object.entries(D.unidades).map(([k, v]) => [k, r2(v)]).sort((a, b) => b[1] - a[1]);
-      const top = Object.values(D.clientes).sort((a, b) => b.v - a.v).slice(0, 10).map(k => ({ n: k.n, a: k.a, v: r2(k.v) }));
-      salida[fecha] = { diaSemana: ds, asesores, unidades, top, cigarros: r2(D.cigarros), facturas: D.docs.size, det: compactarDetalle(D) };
+      salida[fecha] = { diaSemana: ds, lineas, cigarros: r2(D.cigarros), facturas: D.docs.size };
     }
-    const modulos = {};
-    for (const [m, M] of Object.entries(porModulo)) modulos[m] = { lineas: M.lineas, documentos: M.docs.size, venta: r2(M.venta), devol: r2(M.devol), cig: r2(M.cig) };
-    return { dias: salida, filas: lineas.length, sinAsesor: sinAsesor.size, modulos };
+    return { dias: salida, filas: filasLeidas, sinAsesor: sinAsesor.size, exclusion: { lineas: exclusion.lineas, monto: r2(exclusion.monto), clientes: [...exclusion.clientes] } };
   }
-  // Detalle compacto: diccionarios de asesores, clientes, líneas y marcas + filas de índices
-  // r = [asesor, cliente, línea, marca, venta, devolución, día de visita (0 domingo … 6 sábado, -1 sin dato)]
-  function compactarDetalle(D) {
-    const a = [], c = [], u = [], m = [], ia = {}, ic = {}, iu = {}, im = {}, r = [];
-    const idx = (lista, mapa, k, val) => (k in mapa) ? mapa[k] : (mapa[k] = lista.push(val === undefined ? k : val) - 1);
-    for (const [k, X] of D.det) {
-      const [as, rif, un, marca] = k.split('\u0001');
-      if (Math.abs(X.v) < 0.005 && Math.abs(X.d) < 0.005) continue;
-      const dv = D.dvAR[as + '\u0001' + rif];
-      r.push([idx(a, ia, as), idx(c, ic, rif, [rif, D.nom[rif] || rif]), idx(u, iu, un), idx(m, im, marca), r4(X.v), r4(X.d), dv === undefined ? X.dv : dv]);
-    }
-    return { a, c, u, m, r };
-  }
-  // Documentos que aparecen en los dos módulos (no debería pasar: cada sistema tiene su numeración)
-  function cruceDocumentos(mv, b) {
-    const a = new Set(mv.map(l => l.doc).filter(Boolean));
-    return [...new Set(b.map(l => l.doc).filter(d => a.has(d)))];
-  }
+
   /* ---------- Comentarios MobilVendor (visitas comentadas) ---------- */
   function procesarComentarios(filas) {
     const h = encabezado(filas, ['Ruta (Nombre)', 'Cliente', 'Acción']);
@@ -751,59 +568,81 @@ const VJ = (() => {
   }
 
   /* ---------- Órdenes por facturar ---------- */
-  function procesarOrdenes(filas, fechaPorDefecto) {
+  // Las órdenes por facturar son las pendientes al momento del corte: igual que en el Excel,
+  // se suman al día del corte (último día del archivo de ventas), sin importar la fecha de la orden.
+  function procesarOrdenes(filas, fechaCorte, usarFechaOrden = false) {
     const h = encabezado(filas, ['RucCliente', 'NombreVend', 'PrecioTotal']);
     if (!h) throw new Error('No encontré las columnas RucCliente, NombreVend y PrecioTotal en el archivo de órdenes.');
     const c = h.col;
     const cAs = pick(c, 'ASESOR ACTUAL'), cNV = pick(c, 'NombreVend');
     const cF = pick(c, 'FechaFactura');
+    const cRS = pick(c, 'RazónSocial', 'RazonSocial');
+    const cols = ['NombreProv', 'DescrMarca', 'DescrCategoría', 'DescrSubCategoría', 'DescrFamilia'].map(n => pick(c, n)).filter(x => x >= 0);
     const res = {};
     for (let i = h.fila + 1; i < filas.length; i++) {
       const f = filas[i]; if (!f) continue;
       const rif = norm(f[c['RUCCLIENTE']]); if (!rif) continue;
-      const fecha = aISO(f[cF]) || fechaPorDefecto;
-      let as = cAs >= 0 ? norm(f[cAs]) : '';
-      if (!as || as === '#N/A') as = norm(f[cNV]);
-      const R = ((res[fecha] = res[fecha] || {})[as] = res[fecha][as] || { rifs: new Set(), monto: 0 });
-      R.rifs.add(rif); R.monto += num(f[c['PRECIOTOTAL']]);
+      if (excluido(cRS >= 0 ? f[cRS] : '', rif)) continue;
+      const fecha = (usarFechaOrden && aISO(f[cF])) || fechaCorte;
+      // El Excel agrupa las órdenes por NombreVend (vendedor de MobilVendor)
+      let as = norm(f[cNV]);
+      if (!as && cAs >= 0) as = norm(f[cAs]);
+      if (!as || ORDENES_EXCLUIDAS.includes(as)) continue;
+      const texto = cols.map(k => norm(f[k])).join(' ');
+      const cig = esCigarrera(texto, texto);
+      const monto = num(f[c['PRECIOTOTAL']]);
+      const R = ((res[fecha] = res[fecha] || {})[as] = res[fecha][as] || { todas: { rifs: new Set(), monto: 0 }, base: { rifs: new Set(), monto: 0 }, cig: { rifs: new Set(), monto: 0 } });
+      for (const sg of ['todas', cig ? 'cig' : 'base']) { R[sg].rifs.add(rif); R[sg].monto += monto; }
     }
     const out = {};
-    for (const [f, m] of Object.entries(res)) { out[f] = {}; for (const [a, R] of Object.entries(m)) out[f][a] = { n: R.rifs.size, monto: r2(R.monto) }; }
+    for (const [f, m] of Object.entries(res)) {
+      out[f] = {};
+      for (const [a, R] of Object.entries(m)) out[f][a] = Object.fromEntries(Object.entries(R).map(([k, x]) => [k, { n: x.rifs.size, monto: r2(x.monto) }]));
+    }
     return out;
   }
-
-  /* ---------- Armar el corte final ---------- */
-  function armarCorte({ maestro, ventas, comentarios = {}, ordenes = {}, archivos = {} }) {
+  // fueraReal = false calcula como el cuadro de Excel: fuera de ruta = clientes atendidos,
+  // y el cumplimiento queda (visitas comentadas + órdenes) ÷ visita programada.
+  function armarCorte({ maestro, ventas, comentarios = {}, ordenes = {}, archivos = {}, fueraReal = false }) {
     const fechas = Object.keys(ventas.dias).sort();
     const conocidos = new Set(COORDINACIONES.flatMap(g => g.asesores));
     const extra = new Set();
-    for (const f of fechas) for (const a of Object.keys(ventas.dias[f].asesores)) if (!conocidos.has(a)) extra.add(a);
+    for (const f of fechas) for (const a of Object.keys(ventas.dias[f].lineas.todas.asesores)) if (!conocidos.has(a)) extra.add(a);
     const grupos = COORDINACIONES.map(g => ({ ...g }));
     if (extra.size) grupos.push({ nombre: 'OTROS', color: COLOR_OTROS, asesores: [...extra].sort() });
+    const vacio = { venta: 0, devol: 0, atendidos: 0, fuera: 0 }, sinOrden = { n: 0, monto: 0 };
 
     const dias = {};
     for (const f of fechas) {
       const V = ventas.dias[f];
-      const filas = {};
-      for (const g of grupos) for (const a of g.asesores) {
-        const v = V.asesores[a] || { venta: 0, devol: 0, cig: 0, atendidos: 0, fuera: 0 };
-        const prgA = maestro.prg[a];
-        const o = (ordenes[f] || {})[a] || { n: 0, monto: 0 };
-        filas[a] = {
-          prg: SIN_PRG.includes(a) ? null : SIN_RUTA.includes(a) ? 0 : (prgA ? (prgA[V.diaSemana] || 0) : 0),
-          atendidos: v.atendidos, fuera: v.fuera,
-          ordenes: o.n, montoOrdenes: o.monto,
-          comentadas: (comentarios[f] || {})[a] || 0,
-          venta: r2(v.venta + o.monto), facturado: v.venta, devol: v.devol, cig: v.cig
-        };
-      }
-      dias[f] = { diaSemana: V.diaSemana, filas, unidades: V.unidades.slice(0, 15), top: V.top, cigarros: V.cigarros, facturas: V.facturas, det: V.det };
+      const vista = sg => {
+        const L = V.lineas[sg], filas = {};
+        for (const g of grupos) for (const a of g.asesores) {
+          const v = L.asesores[a] || vacio;
+          const prgA = maestro.prg[a];
+          // En la vista sin cigarros las órdenes entran completas, igual que en el Excel
+          const o = (((ordenes[f] || {})[a]) || {})[sg === 'base' ? 'todas' : sg] || sinOrden;
+          filas[a] = {
+            prg: SIN_PRG.includes(a) ? null : SIN_RUTA.includes(a) ? 0 : (prgA ? (prgA[V.diaSemana] || 0) : 0),
+            atendidos: v.atendidos, fuera: fueraReal ? v.fuera : v.atendidos,
+            ordenes: o.n, montoOrdenes: o.monto,
+            comentadas: (comentarios[f] || {})[a] || 0,
+            venta: r2(v.venta + o.monto), facturado: v.venta, devol: v.devol
+          };
+        }
+        return { filas, unidades: L.unidades.slice(0, 15), top: L.top };
+      };
+      const base = vista('base');
+      // La vista base (sin cigarros, igual al cuadro de Excel) queda en la raíz del día
+      dias[f] = { diaSemana: V.diaSemana, ...base, cigarros: V.cigarros, facturas: V.facturas, lineas: { todas: vista('todas'), cig: vista('cig') } };
     }
     return {
-      version: 1,
+      version: 2,
+      fueraReal,
       generado: new Date().toISOString(),
       archivos,
       maestro: { total: maestro.total, activos: maestro.activos },
+      excluidos: ventas.exclusion,
       coordinaciones: grupos,
       fechas,
       dias,
@@ -811,10 +650,15 @@ const VJ = (() => {
       tieneOrdenes: Object.keys(ordenes).length > 0
     };
   }
+  // Datos de un día en la línea de servicio elegida (compatible con cortes anteriores sin líneas)
+  function vistaLinea(dia, linea) {
+    if (linea && linea !== 'base' && dia.lineas && dia.lineas[linea]) return { ...dia.lineas[linea], cigarros: dia.cigarros, facturas: dia.facturas, diaSemana: dia.diaSemana };
+    return dia;
+  }
 
   // Totales de un grupo de filas con la misma fórmula de cumplimiento del cuadro
   function totales(filas) {
-    const t = { prg: 0, atendidos: 0, fuera: 0, ordenes: 0, comentadas: 0, venta: 0, devol: 0, cig: 0 };
+    const t = { prg: 0, atendidos: 0, fuera: 0, ordenes: 0, comentadas: 0, venta: 0, devol: 0, cig: 0, montoOrdenes: 0, facturado: 0 };
     let logrado = 0;
     for (const r of filas) {
       for (const k in t) t[k] += r[k] || 0;
@@ -830,78 +674,6 @@ const VJ = (() => {
     return (r.comentadas + r.ordenes + (r.atendidos - r.fuera)) / r.prg;
   }
 
-  /* ---------- Tablero: agregar un rango de días con filtros ---------- */
-  // dias: [{ fecha, dia }] donde dia es un día del corte o del registro (con o sin detalle)
-  // F: { asesores: Set | null, lineas: Set | null, marcas: Set ('LÍNEA›MARCA') | null }
-  const SEP_MARCA = '›';
-  function agregar(dias, F = {}) {
-    const lineaOn = !!(F.lineas || F.marcas);
-    const okA = a => !F.asesores || F.asesores.has(a);
-    const okL = (un, mk) => (!F.lineas || F.lineas.has(un)) && (!F.marcas || F.marcas.has(un + SEP_MARCA + mk));
-    const base = () => ({ prg: 0, prgNulo: false, atendidos: 0, fuera: 0, ordenes: 0, montoOrdenes: 0, comentadas: 0, facturado: 0, devol: 0, cig: 0 });
-    const filas = {}, lineas = {}, clientes = {};
-    let cig = 0, facturas = 0;
-    const sinDetalle = [];
-    const sumaLinea = (un, mk, v, d, rif, esCig) => {
-      const L = lineas[un] = lineas[un] || { v: 0, d: 0, cig: esCig, cli: new Set(), marcas: {} };
-      L.v += v; L.d += d; if (rif) L.cli.add(rif);
-      if (mk === null) return;
-      const M = L.marcas[mk] = L.marcas[mk] || { v: 0, d: 0, cli: new Set() };
-      M.v += v; M.d += d; if (rif) M.cli.add(rif);
-    };
-    for (const { dia } of dias) {
-      const ds = DIAS.indexOf(dia.diaSemana);
-      facturas += dia.facturas || 0;
-      for (const [a, r] of Object.entries(dia.filas || {})) {
-        if (!okA(a)) continue;
-        const t = filas[a] = filas[a] || base();
-        if (r.prg === null || r.prg === undefined) t.prgNulo = true; else t.prg += r.prg || 0;
-        t.ordenes += r.ordenes || 0; t.montoOrdenes += r.montoOrdenes || 0; t.comentadas += r.comentadas || 0;
-        if (!dia.det) {
-          // Días sin detalle (cortes viejos): solo se pueden filtrar por asesor
-          t.facturado += r.facturado ?? ((r.venta || 0) - (r.montoOrdenes || 0));
-          t.devol += r.devol || 0; t.cig += r.cig || 0; cig += r.cig || 0;
-          t.atendidos += r.atendidos || 0; t.fuera += r.fuera || 0;
-        }
-      }
-      if (!dia.det) {
-        sinDetalle.push(dia);
-        if (!F.asesores) {
-          for (const [un, v] of dia.unidades || []) sumaLinea(un, null, v, 0, null, false);
-          for (const k of dia.top || []) { const C = clientes[k.n] = clientes[k.n] || { n: k.n, a: k.a, v: 0 }; C.v += k.v; }
-        }
-        continue;
-      }
-      const { a, c, u, m, r } = dia.det;
-      const neto = {};
-      for (const [ai, ci, ui, mi, v, d, dv] of r) {
-        const as = a[ai], un = u[ui], mk = m[mi];
-        if (!okA(as) || !okL(un, mk)) continue;
-        const rif = c[ci][0];
-        const t = filas[as] = filas[as] || base();
-        if (un === UN_CIGARROS) { t.cig += v + d; cig += v + d; sumaLinea(un, mk, v + d, 0, rif, true); continue; }
-        t.facturado += v; t.devol += d;
-        const N = neto[ai + '|' + ci] = neto[ai + '|' + ci] || { as, n: 0, dv };
-        N.n += v + d; N.dv = dv;
-        sumaLinea(un, mk, v, d, rif, false);
-        const C = clientes[rif] = clientes[rif] || { n: c[ci][1], a: as, v: 0 };
-        C.v += v + d;
-      }
-      for (const N of Object.values(neto)) if (N.n > 0) { filas[N.as].atendidos++; if (N.dv !== ds) filas[N.as].fuera++; }
-    }
-    for (const t of Object.values(filas)) {
-      t.venta = r2(t.facturado + (lineaOn ? 0 : t.montoOrdenes));
-      t.facturado = r2(t.facturado); t.devol = r2(t.devol); t.cig = r2(t.cig);
-      if (t.prgNulo && !t.prg) t.prg = null;
-      delete t.prgNulo;
-    }
-    const lista = Object.entries(lineas).map(([un, L]) => ({
-      un, v: r2(L.v), d: r2(L.d), cig: L.cig, clientes: L.cli.size,
-      marcas: Object.entries(L.marcas).map(([mk, M]) => ({ mk, v: r2(M.v), d: r2(M.d), clientes: M.cli.size })).sort((x, y) => y.v - x.v)
-    })).sort((x, y) => (x.cig - y.cig) || (y.v - x.v));
-    const top = Object.values(clientes).sort((x, y) => y.v - x.v).slice(0, 10).map(k => ({ n: k.n, a: k.a, v: r2(k.v) }));
-    return { filas, lineas: lista, top, cig: r2(cig), facturas, sinDetalle: sinDetalle.length, lineaOn };
-  }
 
   /* ---------- Histórico de cortes registrados ---------- */
   // Congela cómo quedó el corte de un día en el momento de registrarlo
@@ -946,9 +718,9 @@ const VJ = (() => {
     }
     return out;
   }
-  function totalesRegistro(r) { return totales(Object.values(r.dia.filas)); }
+  function totalesRegistro(r, linea) { return totales(Object.values(vistaLinea(r.dia, linea).filas)); }
 
-  return { crearRegistro, historialVacio, fusionarHistorial, representantes, totalesRegistro, COORDINACIONES, norm, aISO, diaSemana, DIAS, UN_CIGARROS, SEP_MARCA, agregar, detectar, procesarMaestro, normalizarMV, normalizarB, procesarVentas, cruceDocumentos, procesarComentarios, procesarOrdenes, armarCorte, totales, cumplimiento };
+  return { LINEAS, CLIENTES_EXCLUIDOS, vistaLinea, crearRegistro, historialVacio, fusionarHistorial, representantes, totalesRegistro, COORDINACIONES, norm, aISO, diaSemana, detectar, procesarMaestro, procesarVentas, procesarComentarios, procesarOrdenes, armarCorte, totales, cumplimiento };
 })();
 if (typeof module !== 'undefined') module.exports = VJ;
 </script>
@@ -960,7 +732,7 @@ const UI = (() => {
   const f$ = new Intl.NumberFormat('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const fN = new Intl.NumberFormat('es-VE');
   const dinero = v => Math.abs(v || 0) < 0.005 ? '-' : f$.format(v);
-  const usd = v => (v < 0 ? '−$ ' : '$ ') + f$.format(Math.abs(v || 0));
+  const usd = v => (v < 0 ? '−$\u00A0' : '$\u00A0') + f$.format(Math.abs(v || 0));
   const pct = v => Math.round((v || 0) * 100) + '%';
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const DIA = { LUNES: 'Lunes', MARTES: 'Martes', MIERCOLES: 'Miércoles', JUEVES: 'Jueves', VIERNES: 'Viernes', SABADO: 'Sábado', DOMINGO: 'Domingo' };
@@ -989,14 +761,19 @@ const UI = (() => {
     try { const r = await fetch(ruta + '?t=' + Date.now(), { cache: 'no-store' }); if (r.ok) return await r.json(); } catch (e) { }
     return null;
   }
+  // Busca en data/ y, si el repositorio tiene los archivos sueltos en la raíz, también ahí
+  async function leerRemotoDoble(nombre) {
+    const [a, b] = await Promise.all([leerRemoto('data/' + nombre), leerRemoto(nombre)]);
+    return [a, b];
+  }
   async function cargarCorte() {
-    const remoto = await leerRemoto(RUTAS.corte), local = leerLS(LS.corte);
-    return [remoto, local].filter(x => x && x.fechas && x.fechas.length)
+    const [r1, r2] = await leerRemotoDoble('corte.json'), local = leerLS(LS.corte);
+    return [r1, r2, local].filter(x => x && x.fechas && x.fechas.length)
       .sort((a, b) => (b.generado || '').localeCompare(a.generado || ''))[0] || null;
   }
   async function cargarHistorial() {
-    const remoto = await leerRemoto(RUTAS.historial), local = leerLS(LS.historial);
-    return VJ.fusionarHistorial(remoto || VJ.historialVacio(), local || VJ.historialVacio());
+    const [r1, r2] = await leerRemotoDoble('historial.json'), local = leerLS(LS.historial);
+    return [r1, r2, local].reduce((h, x) => VJ.fusionarHistorial(h, x || VJ.historialVacio()), VJ.historialVacio());
   }
 
   /* ---------- Grupos y totales ---------- */
@@ -1016,7 +793,7 @@ const UI = (() => {
     const c = sub ? r.cumpl : VJ.cumplimiento({ ...r, prg: r.prg || 0 });
     const p = sub ? `<td class="c">${pct(c)}</td>` : `<td class="c"><span class="pct ${claseCumpl(c)}">${pct(c)}</span></td>`;
     return prg + n(r.atendidos) + n(r.ordenes) + n(r.comentadas) + p + n(r.fuera)
-      + `<td class="n">${dinero(r.venta)}</td><td class="n${(r.devol || 0) < 0 ? ' neg' : ' cero'}">${dinero(r.devol)}</td>`;
+      + `<td class="n"${r.montoOrdenes ? ` title="Facturado ${f$.format((r.venta || 0) - r.montoOrdenes)} + órdenes ${f$.format(r.montoOrdenes)}"` : ''}>${dinero(r.venta)}</td><td class="n${(r.devol || 0) < 0 ? ' neg' : ' cero'}">${dinero(r.devol)}</td>`;
   }
   function pintarCuadro(tabla, lomo, grupos, T) {
     let h = '';
@@ -1039,16 +816,27 @@ const UI = (() => {
     const txt = esDinero ? usd(Math.abs(d)).replace('−', '') : fN.format(Math.abs(d));
     return ` · <span class="delta ${d > 0 ? 'up' : 'down'}">${d > 0 ? '+' : '−'}${txt}</span>`;
   }
-  function pintarKpis(el, T, { cigarros = 0, facturas = null, previo = null, notaVenta = '', rotVenta = 'Venta del día' } = {}) {
+  function pintarKpis(el, T, { cigarros = 0, facturas = null, previo = null, notaVenta = '', linea = 'base', ventaTodas = 0 } = {}) {
     const p = previo || {};
+    const quinto = linea === 'cig'
+      ? { rot: 'Peso en la venta total', val: pct(ventaTodas ? T.venta / ventaTodas : 0), pie: `de ${usd(ventaTodas)} en todas las líneas`, c: '#747474' }
+      : linea === 'todas'
+        ? { rot: 'Cigarros Bigott incluidos', val: usd(cigarros), pie: T.venta ? `${(cigarros / T.venta * 100).toFixed(1).replace('.', ',')}% de esta venta` : '—', c: '#747474' }
+        : { rot: 'Cigarros Bigott', val: usd(cigarros), pie: 'Se reporta aparte del cuadro', c: '#747474' };
     const k = [
-      { rot: rotVenta, val: usd(T.venta), pie: (notaVenta || (facturas !== null ? `${fN.format(facturas)} facturas` : '')) + deltaTxt(T.venta, p.venta, true), c: 'var(--azul-med)' },
+      { rot: 'Venta del día', val: usd(T.venta), pie: (T.montoOrdenes ? `Facturado ${usd(T.venta - T.montoOrdenes)} + órdenes ${usd(T.montoOrdenes)}` : (notaVenta || (facturas !== null ? `${fN.format(facturas)} facturas` : ''))) + deltaTxt(T.venta, p.venta, true), c: 'var(--azul-med)' },
       { rot: 'Devoluciones', val: usd(T.devol), pie: (T.venta ? `${(Math.abs(T.devol) / T.venta * 100).toFixed(1).replace('.', ',')}% de la venta` : '—'), c: 'var(--rojo)' },
-      { rot: 'Clientes atendidos', val: fN.format(T.atendidos), pie: `de <b>${fN.format(T.prg)}</b> por atender` + deltaTxt(T.atendidos, p.atendidos), c: 'var(--verde)' },
+      { rot: linea === 'cig' ? 'Clientes con cigarros' : 'Clientes atendidos', val: fN.format(T.atendidos), pie: `de <b>${fN.format(T.prg)}</b> por atender` + deltaTxt(T.atendidos, p.atendidos), c: 'var(--verde)' },
       { rot: 'Cumplimiento', val: pct(T.cumpl), pie: `<b>${fN.format(T.fuera)}</b> clientes fuera de ruta`, c: '#F4A200' },
-      { rot: 'Cigarros Bigott', val: usd(cigarros), pie: 'Se reporta aparte del cuadro', c: '#747474' }
+      quinto
     ];
     el.innerHTML = k.map(x => `<div class="kpi" style="--c:${x.c}"><p class="rot">${x.rot}</p><p class="val">${x.val}</p><p class="pie">${x.pie}</p></div>`).join('');
+  }
+  // Selector de línea de servicio (Sin cigarros · Todas las líneas · Bigott y cigarrera)
+  const leerLinea = () => { const l = localStorage.getItem('vjc_linea'); return VJ.LINEAS[l] ? l : 'base'; };
+  function pintarSelectorLinea(el, actual, alCambiar) {
+    el.innerHTML = Object.entries(VJ.LINEAS).map(([k, t]) => `<button class="chip-dia" type="button" data-l="${k}" aria-pressed="${k === actual}"><b>${t}</b></button>`).join('');
+    el.querySelectorAll('button').forEach(b => b.onclick = () => { localStorage.setItem('vjc_linea', b.dataset.l); alCambiar(b.dataset.l); });
   }
 
   /* ---------- Gráficas ---------- */
@@ -1068,7 +856,7 @@ const UI = (() => {
   const tip$ = { callbacks: { label: c => (c.dataset.label ? c.dataset.label + ': ' : '') + '$ ' + f$.format(c.raw) } };
 
   /* ---------- Excel ---------- */
-  function excel(coordinaciones, filas, encabezado, archivo, extras = []) {
+  function excel(coordinaciones, filas, encabezado, archivo) {
     if (typeof XLSX === 'undefined') return;
     const aoa = [[encabezado]], todas = [];
     for (const g of coordinaciones) {
@@ -1084,11 +872,6 @@ const UI = (() => {
     const ws = XLSX.utils.aoa_to_sheet(aoa);
     ws['!cols'] = [{ wch: 24 }, ...ENCAB.map(() => ({ wch: 14 }))];
     const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'CORTE');
-    for (const x of extras) {
-      const w = XLSX.utils.aoa_to_sheet(x.aoa);
-      if (x.cols) w['!cols'] = x.cols.map(wch => ({ wch }));
-      XLSX.utils.book_append_sheet(wb, w, x.nombre.slice(0, 31));
-    }
     XLSX.writeFile(wb, archivo);
   }
 
@@ -1097,12 +880,13 @@ const UI = (() => {
   }
 
   return { LS, RUTAS, $, f$, fN, dinero, usd, pct, esc, DIA, MESES, nombreDia, fechaLarga, mesLargo, hora, fechaHora, titulo, claseCumpl,
-    leerLS, guardarLS, leerRemoto, cargarCorte, cargarHistorial, armarGrupos, pintarCuadro, pintarKpis, grafica, ticks$, tip$, excel, navActual, ENCAB };
+    leerLinea, pintarSelectorLinea, leerLS, guardarLS, leerRemoto, cargarCorte, cargarHistorial, armarGrupos, pintarCuadro, pintarKpis, grafica, ticks$, tip$, excel, navActual, ENCAB };
 })();
 </script>
 <script>
 const { $, fN, f$, usd, pct, esc } = UI;
-let CORTE = null, HIST = null, SEL = null, REG = null, MEDIDA = 'venta', MES = null;
+let CORTE = null, HIST = null, SEL = null, REG = null, MEDIDA = 'venta', MES = null, LINEA = UI.leerLinea();
+const NOTA_LINEA = { base: 'sin cigarros Bigott', todas: 'todas las líneas de servicio', cig: 'solo Bigott y cigarrera' };
 
 /* ---------- Navegación ---------- */
 function vista() {
@@ -1116,308 +900,65 @@ function vista() {
 }
 window.addEventListener('hashchange', vista);
 
-/* ================= Tablero: fechas, coordinaciones, vendedores, líneas y marcas ================= */
-const LS_FILTROS = 'vjc_filtros';
-const FIL = { desde: null, hasta: null, coord: [], vend: [], lineas: [], marcas: [] };
-try { Object.assign(FIL, JSON.parse(localStorage.getItem(LS_FILTROS) || '{}'), { desde: null, hasta: null }); } catch (e) { }
-const guardarFiltros = () => { try { localStorage.setItem(LS_FILTROS, JSON.stringify({ coord: FIL.coord, vend: FIL.vend, lineas: FIL.lineas, marcas: FIL.marcas })); } catch (e) { } };
-let FUENTE = {};            // fecha -> { dia, origen: 'corte' | 'historico', reg }
-let FECHAS = [];            // fechas con datos, en orden
-let COORD = [];             // coordinaciones vigentes
-const SEP = VJ.SEP_MARCA;
-
-// Une los días del corte publicado con los cierres del histórico (el corte publicado manda en sus días)
-function armarFuente() {
-  FUENTE = {};
-  if (HIST) {
-    const rep = VJ.representantes(HIST);
-    for (const [f, r] of Object.entries(rep)) FUENTE[f] = { dia: r.dia, origen: 'historico', reg: r };
+/* ================= Corte del día ================= */
+function datosSel() {
+  if (SEL !== 'ACUM') return VJ.vistaLinea(CORTE.dias[SEL], LINEA);
+  const filas = {}, un = {};
+  for (const f of CORTE.fechas) {
+    const d = VJ.vistaLinea(CORTE.dias[f], LINEA);
+    for (const [a, r] of Object.entries(d.filas)) {
+      const t = filas[a] = filas[a] || { prg: r.prg === null ? null : 0, atendidos: 0, fuera: 0, ordenes: 0, comentadas: 0, venta: 0, devol: 0 };
+      for (const k of ['atendidos', 'fuera', 'ordenes', 'comentadas', 'venta', 'devol']) t[k] += r[k] || 0;
+      if (t.prg !== null) t.prg += r.prg || 0;
+    }
+    for (const [u, v] of d.unidades) un[u] = (un[u] || 0) + v;
   }
-  if (CORTE) for (const f of CORTE.fechas) FUENTE[f] = { dia: CORTE.dias[f], origen: 'corte' };
-  FECHAS = Object.keys(FUENTE).sort();
-  COORD = CORTE ? CORTE.coordinaciones : (HIST && HIST.registros[0] ? HIST.registros[0].coordinaciones : VJ.COORDINACIONES);
+  return { filas, unidades: Object.entries(un).sort((a, b) => b[1] - a[1]), top: null, cigarros: CORTE.fechas.reduce((s, f) => s + (CORTE.dias[f].cigarros || 0), 0), facturas: CORTE.fechas.reduce((s, f) => s + (CORTE.dias[f].facturas || 0), 0) };
 }
-const enRango = () => FECHAS.filter(f => f >= FIL.desde && f <= FIL.hasta);
-
-/* ---------- Fechas ---------- */
-const isoDe = d => new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())).toISOString().slice(0, 10);
-const sumar = (iso, n) => { const d = new Date(iso + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return isoDe(d); };
-const corto = iso => `${Number(iso.slice(8))} ${UI.MESES[Number(iso.slice(5, 7)) - 1].slice(0, 3)}`;
-function textoRango() {
-  if (!FIL.desde) return '—';
-  if (FIL.desde === FIL.hasta) return `${UI.DIA[VJ.diaSemana(FIL.desde)]} ${corto(FIL.desde)} ${FIL.desde.slice(0, 4)}`;
-  const mismoAnio = FIL.desde.slice(0, 4) === FIL.hasta.slice(0, 4);
-  return `${corto(FIL.desde)}${mismoAnio ? '' : ' ' + FIL.desde.slice(0, 4)} – ${corto(FIL.hasta)} ${FIL.hasta.slice(0, 4)}`;
-}
-function presets() {
-  const u = FECHAS[FECHAS.length - 1];
-  if (!u) return [];
-  const lunes = sumar(u, -((new Date(u + 'T12:00:00Z').getUTCDay() + 6) % 7));
-  const ini = u.slice(0, 8) + '01';
-  const finAnt = sumar(ini, -1), iniAnt = finAnt.slice(0, 8) + '01';
-  return [
-    ['Último día con datos', u, u],
-    ['Últimos 7 días', sumar(u, -6), u],
-    ['Esta semana', lunes, u],
-    ['Este mes', ini, u],
-    ['Mes anterior', iniAnt, finAnt],
-    ['Todo el período', FECHAS[0], u]
-  ];
-}
-let CAL_MES = null, CAL_INI = null;
-function abrirCalendario(btn) {
-  CAL_MES = (FIL.hasta || FECHAS[FECHAS.length - 1]).slice(0, 7);
-  CAL_INI = null;
-  abrirPop(btn, pop => {
-    pop.innerHTML = `<div class="cal-pop"><div class="cal-pre">${presets().map(([t, a, b], i) => `<button type="button" data-i="${i}">${t}</button>`).join('')}</div><div><div class="cal-cab"><button type="button" data-n="-1" aria-label="Mes anterior">‹</button><b></b><button type="button" data-n="1" aria-label="Mes siguiente">›</button></div><div class="cal" role="grid"></div><p class="cal-nota">Toca el primer día y luego el último. Los días con punto tienen datos.</p></div></div>`;
-    const P = presets();
-    pop.querySelectorAll('.cal-pre button').forEach(b => b.onclick = () => { const [, a, z] = P[b.dataset.i]; fijarRango(a, z); cerrarPop(); });
-    pop.querySelectorAll('.cal-cab button').forEach(b => b.onclick = () => { const d = new Date(CAL_MES + '-15T12:00:00Z'); d.setUTCMonth(d.getUTCMonth() + Number(b.dataset.n)); CAL_MES = isoDe(d).slice(0, 7); pintarMes(pop); });
-    pintarMes(pop);
-  }, 'dialog');
-}
-function pintarMes(pop) {
-  const [y, m] = CAL_MES.split('-').map(Number);
-  pop.querySelector('.cal-cab b').textContent = `${UI.MESES[m - 1]} ${y}`;
-  const primero = new Date(Date.UTC(y, m - 1, 1)), dias = new Date(Date.UTC(y, m, 0)).getUTCDate();
-  const offset = (primero.getUTCDay() + 6) % 7; // semana de lunes a domingo
-  const conDatos = new Set(FECHAS), hoy = isoDe(new Date());
-  const a = CAL_INI || FIL.desde, z = CAL_INI ? CAL_INI : FIL.hasta;
-  let h = ['L', 'M', 'X', 'J', 'V', 'S', 'D'].map(d => `<span class="dsem">${d}</span>`).join('');
-  for (let i = 0; i < offset; i++) h += '<span></span>';
-  for (let d = 1; d <= dias; d++) {
-    const iso = `${CAL_MES}-${String(d).padStart(2, '0')}`;
-    const cls = [conDatos.has(iso) ? 'dato' : '', iso === a ? 'ini' : '', iso === z ? 'fin' : '', a && z && iso > a && iso < z ? 'en' : '', iso === hoy ? 'hoy' : ''].filter(Boolean).join(' ');
-    h += `<button type="button" class="${cls}" data-d="${iso}" aria-label="${UI.fechaLarga(iso)}${conDatos.has(iso) ? ', con datos' : ''}">${d}</button>`;
-  }
-  const cal = pop.querySelector('.cal');
-  cal.innerHTML = h;
-  cal.querySelectorAll('button').forEach(b => b.onclick = () => {
-    const d = b.dataset.d;
-    if (!CAL_INI) { CAL_INI = d; pintarMes(pop); return; }
-    const [x, y2] = d < CAL_INI ? [d, CAL_INI] : [CAL_INI, d];
-    CAL_INI = null; fijarRango(x, y2); cerrarPop();
-  });
-}
-function fijarRango(a, z) { FIL.desde = a; FIL.hasta = z; pintarCorte(); }
-
-/* ---------- Ventanas de selección ---------- */
-let POP = null;
-function cerrarPop() {
-  if (!POP) return;
-  POP.el.remove(); POP.btn.setAttribute('aria-expanded', 'false');
-  const alCerrar = POP.alCerrar; POP = null;
-  if (alCerrar) alCerrar();
-}
-function abrirPop(btn, llenar, rol = 'listbox', alCerrar) {
-  const mismo = POP && POP.btn === btn;
-  cerrarPop();
-  if (mismo) return;
-  const el = document.createElement('div');
-  el.className = 'pop'; el.setAttribute('role', rol);
-  btn.parentNode.appendChild(el);
-  btn.setAttribute('aria-expanded', 'true');
-  POP = { el, btn, alCerrar };
-  llenar(el);
-  const r = el.getBoundingClientRect();
-  if (r.right > window.innerWidth - 8) el.classList.add('der');
-}
-document.addEventListener('mousedown', e => { if (POP && !POP.el.contains(e.target) && e.target !== POP.btn && !POP.btn.contains(e.target)) cerrarPop(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && POP) { const b = POP.btn; cerrarPop(); b.focus(); } });
-
-// Lista con casillas: opciones [{ v, t, g?, n?, color? }]; vacía = todas
-function abrirLista(btn, opciones, clave, { buscar = false, vacio = 'No hay opciones en este período.' } = {}) {
-  const sel = new Set(FIL[clave]);
-  abrirPop(btn, pop => {
-    pop.innerHTML = `${buscar ? '<input type="search" placeholder="Buscar…" aria-label="Buscar">' : ''}<div class="op-lista"></div><div class="pop-pie"><button type="button" data-a="todas">Todas</button><button type="button" data-a="ninguna">Limpiar selección</button></div>`;
-    const lista = pop.querySelector('.op-lista');
-    const pintar = (q = '') => {
-      const nq = VJ.norm(q);
-      let g = null, h = '';
-      for (const o of opciones) {
-        if (nq && !VJ.norm(o.t + ' ' + (o.g || '')).includes(nq)) continue;
-        if (o.g !== undefined && o.g !== g) { g = o.g; h += `<div class="op-grupo">${esc(g)}</div>`; }
-        h += `<label class="op"><input type="checkbox" value="${esc(o.v)}" ${sel.has(o.v) ? 'checked' : ''}>${o.color ? `<span class="pt" style="background:${o.color}"></span>` : ''}<span>${esc(o.t)}</span>${o.n !== undefined ? `<small>${o.n}</small>` : ''}</label>`;
-      }
-      lista.innerHTML = h || `<p class="cal-nota">${opciones.length ? 'Sin coincidencias.' : vacio}</p>`;
-      lista.querySelectorAll('input').forEach(i => i.onchange = () => { if (i.checked) sel.add(i.value); else sel.delete(i.value); });
-    };
-    pintar();
-    const q = pop.querySelector('input[type=search]');
-    if (q) { q.oninput = () => pintar(q.value); setTimeout(() => q.focus(), 0); }
-    pop.querySelector('[data-a=todas]').onclick = () => { sel.clear(); cerrarPop(); };
-    pop.querySelector('[data-a=ninguna]').onclick = () => { sel.clear(); pintar(q ? q.value : ''); };
-  }, 'listbox', () => {
-    FIL[clave] = [...sel];
-    depurarFiltros(); guardarFiltros(); pintarCorte();
-  });
-}
-
-/* ---------- Filtros efectivos ---------- */
-function asesoresDe(coords) { return COORD.filter(g => !coords.length || coords.includes(g.nombre)).flatMap(g => g.asesores); }
-function depurarFiltros() {
-  const nombres = COORD.map(g => g.nombre);
-  FIL.coord = FIL.coord.filter(c => nombres.includes(c));
-  const permitidos = new Set(asesoresDe(FIL.coord));
-  FIL.vend = FIL.vend.filter(v => permitidos.has(v));
-  if (FIL.lineas.length) FIL.marcas = FIL.marcas.filter(k => FIL.lineas.includes(k.split(SEP)[0]));
-}
-function filtroAsesores() {
-  if (FIL.vend.length) return new Set(FIL.vend);
-  if (FIL.coord.length) return new Set(asesoresDe(FIL.coord));
-  return null;
-}
-function filtrosVJ() {
-  return { asesores: filtroAsesores(), lineas: FIL.lineas.length ? new Set(FIL.lineas) : null, marcas: FIL.marcas.length ? new Set(FIL.marcas) : null };
-}
-// Coordinaciones y asesores que se muestran en el cuadro
-function coordVisibles() {
-  const A = filtroAsesores();
-  return COORD.filter(g => !FIL.coord.length || FIL.coord.includes(g.nombre))
-    .map(g => ({ ...g, asesores: g.asesores.filter(a => !A || A.has(a)) }))
-    .filter(g => g.asesores.length);
-}
-function etiqueta(lista, todas, una) {
-  if (!lista.length) return todas;
-  if (lista.length === 1) return una(lista[0]);
-  return `${lista.length} seleccionadas`;
-}
-function pintarBotones() {
-  const b = (id, txt, activo) => { const el = $(id); el.querySelector('span').textContent = txt; el.classList.toggle('activo', activo); };
-  b('#f-fecha', textoRango(), false);
-  b('#f-coord', etiqueta(FIL.coord, 'Todas', UI.titulo), FIL.coord.length > 0);
-  b('#f-vend', FIL.vend.length > 1 ? `${FIL.vend.length} vendedores` : etiqueta(FIL.vend, 'Todos', UI.titulo), FIL.vend.length > 0);
-  b('#f-linea', etiqueta(FIL.lineas, 'Todas', UI.titulo), FIL.lineas.length > 0);
-  b('#f-marca', etiqueta(FIL.marcas, 'Todas', k => UI.titulo(k.split(SEP)[1])), FIL.marcas.length > 0);
-  $('#f-limpiar').hidden = !(FIL.coord.length || FIL.vend.length || FIL.lineas.length || FIL.marcas.length);
-}
-$('#f-fecha').onclick = e => abrirCalendario(e.currentTarget);
-$('#f-coord').onclick = e => abrirLista(e.currentTarget, COORD.map(g => ({ v: g.nombre, t: UI.titulo(g.nombre), color: g.color, n: g.asesores.length })), 'coord');
-$('#f-vend').onclick = e => {
-  const ops = COORD.filter(g => !FIL.coord.length || FIL.coord.includes(g.nombre)).flatMap(g => g.asesores.map(a => ({ v: a, t: UI.titulo(a), g: UI.titulo(g.nombre), color: g.color })));
-  abrirLista(e.currentTarget, ops, 'vend', { buscar: true });
-};
-// Líneas y marcas disponibles en el período (respetando coordinación y vendedor)
-function disponibles() {
-  return VJ.agregar(enRango().map(f => ({ fecha: f, dia: FUENTE[f].dia })), { asesores: filtroAsesores() }).lineas;
-}
-$('#f-linea').onclick = e => {
-  const ops = disponibles().map(L => ({ v: L.un, t: UI.titulo(L.un) + (L.cig ? ' (cigarros)' : ''), n: '$ ' + f$.format(L.v + L.d) }));
-  abrirLista(e.currentTarget, ops, 'lineas', { buscar: true });
-};
-$('#f-marca').onclick = e => {
-  const ops = [];
-  for (const L of disponibles()) {
-    if (FIL.lineas.length && !FIL.lineas.includes(L.un)) continue;
-    for (const M of L.marcas) ops.push({ v: L.un + SEP + M.mk, t: UI.titulo(M.mk), g: UI.titulo(L.un), n: '$ ' + f$.format(M.v + M.d) });
-  }
-  abrirLista(e.currentTarget, ops, 'marcas', { buscar: true, vacio: 'Este período no tiene detalle por marca. Vuelve a procesar el corte en el panel administrativo.' });
-};
-$('#f-limpiar').onclick = () => { FIL.coord = []; FIL.vend = []; FIL.lineas = []; FIL.marcas = []; guardarFiltros(); pintarCorte(); };
-
-/* ---------- Pintar el tablero ---------- */
-let ULTIMO = null;  // último cálculo, para el Excel
 function pintarCorte() {
-  armarFuente();
-  if (!FECHAS.length) { $('#c-contenido').hidden = true; $('#c-vacio').hidden = false; return; }
+  if (!CORTE) { $('#c-contenido').hidden = true; $('#c-vacio').hidden = false; $('#dias').innerHTML = ''; return; }
   $('#c-contenido').hidden = false; $('#c-vacio').hidden = true;
-  const ultima = FECHAS[FECHAS.length - 1];
-  if (!FIL.desde || !FIL.hasta) { FIL.desde = ultima; FIL.hasta = ultima; }
-  depurarFiltros();
-  pintarBotones();
+  if (!SEL || (SEL !== 'ACUM' && !CORTE.dias[SEL])) SEL = CORTE.fechas[CORTE.fechas.length - 1];
+  const chips = CORTE.fechas.map(f => `<button class="chip-dia" type="button" data-f="${f}" aria-pressed="${SEL === f}"><b>${UI.nombreDia(f, CORTE.dias[f].diaSemana)}</b><span>${UI.MESES[Number(f.slice(5, 7)) - 1]}</span></button>`);
+  if (CORTE.fechas.length > 1) chips.push(`<button class="chip-dia" type="button" data-f="ACUM" aria-pressed="${SEL === 'ACUM'}"><b>Acumulado</b><span>${CORTE.fechas.length} días</span></button>`);
+  $('#dias').innerHTML = chips.join('');
+  $('#dias').querySelectorAll('button').forEach(b => b.onclick = () => { SEL = b.dataset.f; pintarCorte(); });
+  UI.pintarSelectorLinea($('#c-lineas'), LINEA, l => { LINEA = l; pintarCorte(); });
 
-  const fechas = enRango();
-  const F = filtrosVJ();
-  const A = VJ.agregar(fechas.map(f => ({ fecha: f, dia: FUENTE[f].dia })), F);
-  const coords = coordVisibles();
-  const { grupos, T } = UI.armarGrupos(coords, A.filas);
-  ULTIMO = { A, coords, fechas };
-
-  const unDia = FIL.desde === FIL.hasta;
-  $('#c-titulo').textContent = unDia ? UI.fechaLarga(FIL.desde) : `Del ${UI.fechaLarga(FIL.desde).toLowerCase()} al ${UI.fechaLarga(FIL.hasta).toLowerCase()}`;
-  const nCorte = fechas.filter(f => FUENTE[f].origen === 'corte').length, nHist = fechas.length - nCorte;
-  const origen = [nCorte ? `${nCorte} del corte procesado el ${UI.fechaHora(CORTE.generado)}` : '', nHist ? `${nHist} de cierres del histórico` : ''].filter(Boolean).join(' · ');
-  $('#c-info').textContent = fechas.length ? `${fechas.length} día(s) con datos: ${origen}` : 'No hay datos en estas fechas. Elige otro período.';
-  $('#subtit').textContent = unDia ? 'Corte del ' + UI.fechaLarga(FIL.desde).toLowerCase() : 'Tablero del ' + textoRango();
-  $('#estado').textContent = CORTE ? `${fN.format(CORTE.maestro.total)} clientes en el maestro` : '';
-  $('#pie').textContent = CORTE ? Object.values(CORTE.archivos || {}).join(' · ') : '';
-
-  // Resumen de filtros y avisos
-  const partes = [];
-  if (FIL.coord.length) partes.push(`<b>Coordinación:</b> ${FIL.coord.map(c => esc(UI.titulo(c))).join(', ')}`);
-  if (FIL.vend.length) partes.push(`<b>Vendedor:</b> ${FIL.vend.map(c => esc(UI.titulo(c))).join(', ')}`);
-  if (FIL.lineas.length) partes.push(`<b>Línea:</b> ${FIL.lineas.map(c => esc(UI.titulo(c))).join(', ')}`);
-  if (FIL.marcas.length) partes.push(`<b>Marca:</b> ${FIL.marcas.map(k => esc(UI.titulo(k.split(SEP)[1]))).join(', ')}`);
-  $('#c-filtros').innerHTML = partes.join(' · ');
-  const av = [];
-  if (A.lineaOn) av.push('Con filtro de línea o marca, la venta, la devolución y los clientes atendidos son solo de esa selección. Visita programada, órdenes y visitas comentadas no se separan por línea, así que el cumplimiento es referencial.');
-  if (A.sinDetalle) av.push(`${A.sinDetalle} día(s) del período vienen de cortes sin detalle por línea y marca${A.lineaOn ? ' y no entran en el filtro de línea' : ''}. Vuelve a procesarlos en el panel administrativo para tener el detalle completo.`);
-  $('#c-aviso').hidden = !av.length;
-  $('#c-aviso').innerHTML = av.map(esc).join('<br>');
-
-  const hayFiltro = !!(F.asesores || F.lineas || F.marcas);
-  UI.pintarKpis($('#c-kpis'), T, {
-    cigarros: A.cig, facturas: hayFiltro ? null : A.facturas, rotVenta: unDia ? 'Venta del día' : 'Venta del período',
-    notaVenta: hayFiltro ? `${fechas.length} día(s) · con filtros` : `${fN.format(A.facturas)} facturas${fechas.length > 1 ? ` en ${fechas.length} días` : ''}`
-  });
+  const D = datosSel();
+  const { grupos, T } = UI.armarGrupos(CORTE.coordinaciones, D.filas);
+  $('#c-titulo').textContent = SEL === 'ACUM' ? 'Acumulado del corte' : UI.fechaLarga(SEL);
+  $('#c-info').textContent = `Procesado el ${UI.fechaHora(CORTE.generado)} · ${NOTA_LINEA[LINEA]}` + (CORTE.fueraReal ? ' · fuera de ruta real' : '') + (CORTE.excluidos && CORTE.excluidos.lineas ? ` · excluye ${CORTE.excluidos.clientes.map(n => n.replace(/\.+$/, '.')).join(', ')}` : '');
+  $('#subtit').textContent = SEL === 'ACUM' ? 'Acumulado del archivo' : 'Corte del ' + UI.fechaLarga(SEL).toLowerCase();
+  $('#estado').textContent = `${fN.format(CORTE.maestro.total)} clientes en el maestro`;
+  $('#pie').textContent = Object.values(CORTE.archivos || {}).join(' · ');
+  UI.pintarKpis($('#c-kpis'), T, { cigarros: D.cigarros, facturas: D.facturas, notaVenta: SEL === 'ACUM' ? `${fN.format(D.facturas)} facturas en ${CORTE.fechas.length} días` : '', linea: LINEA, ventaTodas: ventaTodasSel() });
   UI.pintarCuadro($('#c-tabla'), $('#c-lomo'), grupos, T);
-  pintarLineas(A);
-  graficasCorte(grupos, A, fechas, F);
-  if (A.top.length) {
-    $('#n-top').textContent = `Diez clientes con más venta ${unDia ? 'en el día' : 'en el período'}${hayFiltro ? ', con los filtros aplicados' : ''}.`;
-    $('#top').innerHTML = `<table class="lista"><thead><tr><th>Cliente</th><th>Asesor</th><th>Venta $</th></tr></thead><tbody>${A.top.map(k => `<tr><td>${esc(k.n)}</td><td>${esc(UI.titulo(k.a))}</td><td>${f$.format(k.v)}</td></tr>`).join('')}</tbody></table>`;
-  } else { $('#n-top').textContent = 'No hay clientes con venta para estos filtros.'; $('#top').innerHTML = ''; }
+  graficasCorte(grupos, D);
+  if (D.top) {
+    $('#n-top').textContent = 'Diez clientes con más venta en el día.';
+    $('#top').innerHTML = `<table class="lista"><thead><tr><th>Cliente</th><th>Asesor</th><th>Venta $</th></tr></thead><tbody>${D.top.map(k => `<tr><td>${esc(k.n)}</td><td>${esc(UI.titulo(k.a))}</td><td>${f$.format(k.v)}</td></tr>`).join('')}</tbody></table>`;
+  } else { $('#n-top').textContent = 'Elige un día para ver sus diez clientes con más venta.'; $('#top').innerHTML = ''; }
 }
-
-const ABIERTAS = new Set();
-function pintarLineas(A) {
-  const L = A.lineas;
-  if (!L.length) { $('#lineas').innerHTML = '<div class="vacio" style="padding:18px">No hay venta para estos filtros.</div>'; return; }
-  const total = L.filter(x => !x.cig).reduce((s, x) => s + x.v, 0) || 1;
-  const max = Math.max(...L.map(x => x.v), 1);
-  let h = `<table class="lista lineas"><thead><tr><th>Línea / marca</th><th>Venta $</th><th>Devol. $</th><th>Neto $</th><th>% de la venta</th><th>Clientes</th><th>Marcas</th><th></th></tr></thead><tbody>`;
-  for (const x of L) {
-    const ab = ABIERTAS.has(x.un);
-    const p = x.cig ? '' : `${(x.v / total * 100).toFixed(1).replace('.', ',')}%`;
-    h += `<tr class="${ab ? 'abierta' : ''}" data-un="${esc(x.un)}"><td class="l" tabindex="0" role="button" aria-expanded="${ab}">${esc(UI.titulo(x.un))}${x.cig ? '<span class="tag">cigarros · aparte</span>' : ''}</td><td><span class="barra-p" style="width:${Math.round(x.v / max * 60)}px"></span>${f$.format(x.v)}</td><td class="${x.d < 0 ? 'neg' : ''}">${UI.dinero(x.d)}</td><td><b>${f$.format(x.v + x.d)}</b></td><td>${p}</td><td>${x.clientes ? fN.format(x.clientes) : '–'}</td><td>${x.marcas.length || '–'}</td><td><button class="solo" type="button" data-solo="${esc(x.un)}">Solo esta</button></td></tr>`;
-    if (ab) for (const m of x.marcas) h += `<tr class="mk"><td>${esc(UI.titulo(m.mk))}</td><td>${f$.format(m.v)}</td><td>${UI.dinero(m.d)}</td><td>${f$.format(m.v + m.d)}</td><td>${x.cig ? '' : (m.v / total * 100).toFixed(1).replace('.', ',') + '%'}</td><td>${fN.format(m.clientes)}</td><td></td><td><button class="solo" type="button" data-marca="${esc(x.un + SEP + m.mk)}">Solo esta</button></td></tr>`;
-  }
-  $('#lineas').innerHTML = h + '</tbody></table>';
-  $('#n-lineas').textContent = `${L.length} líneas en el período. Toca una línea para ver sus marcas.`;
-  const alternar = td => { const un = td.parentNode.dataset.un; if (ABIERTAS.has(un)) ABIERTAS.delete(un); else ABIERTAS.add(un); pintarLineas(A); };
-  $('#lineas').querySelectorAll('td.l').forEach(td => { td.onclick = () => alternar(td); td.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); alternar(td); } }; });
-  $('#lineas').querySelectorAll('[data-solo]').forEach(b => b.onclick = () => { FIL.lineas = [b.dataset.solo]; FIL.marcas = []; guardarFiltros(); pintarCorte(); });
-  $('#lineas').querySelectorAll('[data-marca]').forEach(b => b.onclick = () => { const k = b.dataset.marca; FIL.lineas = [k.split(SEP)[0]]; FIL.marcas = [k]; guardarFiltros(); pintarCorte(); });
+function ventaTodasSel() {
+  const fs = SEL === 'ACUM' ? CORTE.fechas : [SEL];
+  return fs.reduce((s, f) => s + VJ.totales(Object.values(VJ.vistaLinea(CORTE.dias[f], 'todas').filas)).venta, 0);
 }
-
-function graficasCorte(grupos, A, fechas, F) {
+function graficasCorte(grupos, D) {
+  $('#t-un').textContent = LINEA === 'cig' ? 'Venta por marca de cigarros' : 'Venta por unidad de negocio';
+  $('#n-un').textContent = LINEA === 'cig' ? 'Las diez marcas con más venta.' : LINEA === 'todas' ? 'Las diez con más venta, incluidos los cigarros Bigott.' : 'Las diez con más venta. Los cigarros Bigott van aparte.';
   const lab = grupos.map(g => UI.titulo(g.nombre)), col = grupos.map(g => g.color);
   UI.grafica('g-coord', { type: 'bar', data: { labels: lab, datasets: [{ data: grupos.map(g => +g.t.venta.toFixed(2)), backgroundColor: col, borderRadius: 6 }] }, options: { scales: { x: { grid: { display: false } }, y: { ticks: UI.ticks$ } }, plugins: { legend: { display: false }, tooltip: UI.tip$ } } });
   UI.grafica('g-cumpl', { type: 'bar', data: { labels: lab, datasets: [{ data: grupos.map(g => Math.round(g.t.cumpl * 100)), backgroundColor: col, borderRadius: 6 }] }, options: { scales: { x: { grid: { display: false } }, y: { min: 0, suggestedMax: 100, ticks: { callback: v => v + '%' } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.raw + '%' } } } } });
   const as = grupos.flatMap(g => g.filas.map(r => ({ n: UI.titulo(r.a), v: r.venta || 0, c: g.color }))).filter(x => x.v > 0).sort((a, b) => b.v - a.v);
   UI.grafica('g-asesor', { type: 'bar', data: { labels: as.map(x => x.n), datasets: [{ data: as.map(x => +x.v.toFixed(2)), backgroundColor: as.map(x => x.c), borderRadius: 4 }] }, options: { indexAxis: 'y', scales: { x: { ticks: UI.ticks$ }, y: { grid: { display: false } } }, plugins: { legend: { display: false }, tooltip: UI.tip$ } } });
-  const un = A.lineas.filter(x => !x.cig).slice(0, 10);
-  UI.grafica('g-un', { type: 'bar', data: { labels: un.map(x => UI.titulo(x.un)), datasets: [{ data: un.map(x => +x.v.toFixed(2)), backgroundColor: '#1740C4', borderRadius: 4 }] }, options: { indexAxis: 'y', scales: { x: { ticks: UI.ticks$ }, y: { grid: { display: false } } }, plugins: { legend: { display: false }, tooltip: UI.tip$ } } });
-  const mk = A.lineas.filter(x => !x.cig).flatMap(x => x.marcas.map(m => ({ n: UI.titulo(m.mk), u: UI.titulo(x.un), v: m.v }))).sort((a, b) => b.v - a.v).slice(0, 15);
-  $('#n-marca').textContent = mk.length ? 'Las quince marcas con más venta, con su línea en la etiqueta.' : 'Sin detalle por marca en este período.';
-  UI.grafica('g-marca', { type: 'bar', data: { labels: mk.map(x => x.n), datasets: [{ data: mk.map(x => +x.v.toFixed(2)), backgroundColor: '#E5142B', borderRadius: 4 }] }, options: { indexAxis: 'y', scales: { x: { ticks: UI.ticks$ }, y: { grid: { display: false } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { title: c => `${mk[c[0].dataIndex].n} · ${mk[c[0].dataIndex].u}`, label: c => '$ ' + f$.format(c.raw) } } } } });
-  // Día por día con los mismos filtros
-  const porDia = fechas.map(f => { const X = VJ.agregar([{ fecha: f, dia: FUENTE[f].dia }], F); const t = VJ.totales(Object.values(X.filas)); return { f, v: t.venta, d: t.devol }; });
-  UI.grafica('g-dias', { type: 'bar', data: { labels: porDia.map(x => UI.nombreDia(x.f) + '/' + x.f.slice(5, 7)), datasets: [{ label: 'Venta', data: porDia.map(x => +x.v.toFixed(2)), backgroundColor: '#0B2A8A', borderRadius: 6 }, { label: 'Devoluciones', data: porDia.map(x => +x.d.toFixed(2)), backgroundColor: '#E5142B', borderRadius: 6 }] }, options: { scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, ticks: UI.ticks$ } }, plugins: { legend: { display: true }, tooltip: UI.tip$ } } });
+  const un = (D.unidades || []).slice(0, 10);
+  UI.grafica('g-un', { type: 'bar', data: { labels: un.map(x => UI.titulo(x[0])), datasets: [{ data: un.map(x => +x[1].toFixed(2)), backgroundColor: '#1740C4', borderRadius: 4 }] }, options: { indexAxis: 'y', scales: { x: { ticks: UI.ticks$ }, y: { grid: { display: false } } }, plugins: { legend: { display: false }, tooltip: UI.tip$ } } });
+  const f = CORTE.fechas, tot = k => f.map(x => +Object.values(VJ.vistaLinea(CORTE.dias[x], LINEA).filas).reduce((s, r) => s + (r[k] || 0), 0).toFixed(2));
+  UI.grafica('g-dias', { type: 'bar', data: { labels: f.map(x => UI.nombreDia(x, CORTE.dias[x].diaSemana)), datasets: [{ label: 'Venta', data: tot('venta'), backgroundColor: '#0B2A8A', borderRadius: 6 }, { label: 'Devoluciones', data: tot('devol'), backgroundColor: '#E5142B', borderRadius: 6 }] }, options: { scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, ticks: UI.ticks$ } }, plugins: { legend: { display: true }, tooltip: UI.tip$ } } });
 }
 $('#b-print').onclick = () => window.print();
-$('#b-excel').onclick = () => {
-  if (!ULTIMO) return;
-  const { A, coords } = ULTIMO;
-  const filtros = $('#c-filtros').textContent;
-  const lineas = [['LÍNEA', 'MARCA', 'VENTA $', 'DEVOLUCIÓN $', 'NETO $', 'CLIENTES']];
-  for (const L of A.lineas) {
-    lineas.push([L.un + (L.cig ? ' (CIGARROS)' : ''), '', L.v, L.d, +(L.v + L.d).toFixed(2), L.clientes]);
-    for (const M of L.marcas) lineas.push(['', M.mk, M.v, M.d, +(M.v + M.d).toFixed(2), M.clientes]);
-  }
-  const rango = FIL.desde === FIL.hasta ? FIL.desde : `${FIL.desde}_a_${FIL.hasta}`;
-  UI.excel(coords, A.filas, `CORTE DE VENTAS · VENEJUGOS 2015 · ${$('#c-titulo').textContent}${filtros ? ' · ' + filtros : ''}`, `CORTE_DE_VENTAS_${rango}.xlsx`, [{ nombre: 'LINEAS Y MARCAS', aoa: lineas, cols: [32, 32, 14, 14, 14, 10] }]);
-};
+$('#b-excel').onclick = () => { if (!CORTE) return; const D = datosSel(); UI.excel(CORTE.coordinaciones, D.filas, `CORTE DE VENTAS · VENEJUGOS 2015 · ${SEL === 'ACUM' ? 'Acumulado' : UI.fechaLarga(SEL)} · ${VJ.LINEAS[LINEA]}`, `CORTE_DE_VENTAS_${SEL}_${LINEA}.xlsx`); };
 
 /* ================= Histórico ================= */
 function vigentesMes() { return HIST.registros.filter(r => r.fecha.slice(0, 7) === MES); }
@@ -1429,6 +970,7 @@ function pintarHistorico() {
   const regDeep = REG && HIST.registros.find(r => r.id === REG);
   if (regDeep) MES = regDeep.fecha.slice(0, 7);
   if (!MES || !meses.includes(MES)) MES = meses[0];
+  UI.pintarSelectorLinea($('#h-lineas'), LINEA, l => { LINEA = l; pintarHistorico(); });
   $('#h-mes').innerHTML = meses.map(m => `<option value="${m}" ${m === MES ? 'selected' : ''}>${UI.mesLargo(m)}</option>`).join('');
   const regs = vigentesMes();
   const rep = VJ.representantes({ registros: regs });
@@ -1443,14 +985,14 @@ function pintarHistorico() {
   const porDia = {};
   for (const r of regs) (porDia[r.fecha] = porDia[r.fecha] || []).push(r);
   $('#h-lista').innerHTML = Object.keys(porDia).sort().reverse().map(f => `<li><h3>${UI.fechaLarga(f)}</h3><ul class="registros" style="max-height:none">${porDia[f].map(r => {
-    const t = VJ.totalesRegistro(r);
+    const t = VJ.totalesRegistro(r, LINEA);
     const pill = r.anulado ? '<span class="pill anulado">Anulado</span>' : `<span class="pill ${r.tipo}">${r.tipo === 'cierre' ? 'Cierre' : 'Parcial'}</span>`;
     return `<li><button class="reg${r.anulado ? ' anul' : ''}" type="button" data-id="${r.id}" aria-current="${r.id === REG}"><span class="h">${UI.hora(r.registrado)}</span>${pill}<span class="v">$ ${f$.format(t.venta)}</span><span class="m">Registrado el ${UI.fechaHora(r.registrado)} · ${fN.format(t.atendidos)} atendidos · ${pct(t.cumpl)}${r.nota ? ' · ' + esc(r.nota) : ''}</span></button></li>`;
   }).join('')}</ul></li>`).join('');
   $('#h-lista').querySelectorAll('.reg').forEach(b => b.onclick = () => { history.replaceState(null, '', '#registro-' + b.dataset.id); REG = b.dataset.id; pintarHistorico(); });
 
   // Gráfica de cierres
-  const vt = fechas.map(f => VJ.totalesRegistro(rep[f]));
+  const vt = fechas.map(f => VJ.totalesRegistro(rep[f], LINEA));
   UI.grafica('g-hist', {
     data: { labels: fechas.map(f => UI.nombreDia(f)), datasets: [
       { type: 'bar', label: 'Venta', data: vt.map(t => +t.venta.toFixed(2)), backgroundColor: fechas.map(f => rep[f].tipo === 'cierre' ? '#0B2A8A' : '#8FA6E8'), borderRadius: 6, yAxisID: 'y' },
@@ -1461,14 +1003,18 @@ function pintarHistorico() {
 
   // Registro elegido
   const r = HIST.registros.find(x => x.id === REG);
-  const { grupos, T } = UI.armarGrupos(r.coordinaciones, r.dia.filas);
+  const D = VJ.vistaLinea(r.dia, LINEA);
+  const { grupos, T } = UI.armarGrupos(r.coordinaciones, D.filas);
+  const sinLineas = LINEA !== 'base' && !r.dia.lineas;
   const previos = regs.filter(x => x.fecha === r.fecha && !x.anulado && x.registrado < r.registrado).sort((a, b) => b.registrado.localeCompare(a.registrado));
-  const prev = previos[0] ? VJ.totalesRegistro(previos[0]) : null;
+  const prev = previos[0] ? VJ.totalesRegistro(previos[0], LINEA) : null;
   $('#h-banner').innerHTML = `<b>Así quedó el corte del ${UI.fechaLarga(r.fecha).toLowerCase()}</b>, registrado el ${UI.fechaHora(r.registrado)} como ${r.tipo === 'cierre' ? 'cierre del día' : 'corte parcial'}.`
     + (prev ? ` Las variaciones comparan con el registro de las ${UI.hora(previos[0].registrado)}.` : '')
+    + ` Vista: ${NOTA_LINEA[sinLineas ? 'base' : LINEA]}.`
+    + (sinLineas ? ' Este registro es anterior a las vistas por línea y solo tiene la vista sin cigarros.' : '')
     + (r.nota ? ` Nota: ${esc(r.nota)}.` : '')
     + (r.anulado ? ` <b>Anulado</b>${r.anulado.motivo ? ': ' + esc(r.anulado.motivo) : ''}; no cuenta en la gráfica ni en la matriz.` : '');
-  UI.pintarKpis($('#h-kpis'), T, { cigarros: r.dia.cigarros, facturas: r.dia.facturas, previo: prev });
+  UI.pintarKpis($('#h-kpis'), T, { cigarros: r.dia.cigarros, facturas: r.dia.facturas, previo: prev, linea: sinLineas ? 'base' : LINEA, ventaTodas: VJ.totalesRegistro(r, 'todas').venta });
   UI.pintarCuadro($('#h-tabla'), $('#h-lomo'), grupos, T);
   $('#h-estado').textContent = (r.archivos && (r.archivos.ventas || Object.values(r.archivos)[0])) || '';
   pintarMatriz(rep, fechas, r.coordinaciones);
@@ -1480,7 +1026,7 @@ function pintarMatriz(rep, fechas, coord) {
   for (const g of coord) {
     h += `<tr class="g"><td colspan="${fechas.length + 2}"><span class="marca" style="background:${g.color}"></span>${esc(g.nombre)}</td></tr>`;
     for (const a of g.asesores) {
-      const fs = fechas.map(f => rep[f].dia.filas[a]);
+      const fs = fechas.map(f => VJ.vistaLinea(rep[f].dia, LINEA).filas[a]);
       const t = VJ.totales(fs.filter(Boolean));
       const tot = MEDIDA === 'cumpl' ? (t.prg ? t.cumpl : null) : t[MEDIDA];
       h += `<tr><td class="asesor">${esc(a)}</td>${fs.map(x => `<td>${fmt(val(x, MEDIDA))}</td>`).join('')}<td><b>${fmt(tot)}</b></td></tr>`;
@@ -1495,7 +1041,7 @@ document.querySelectorAll('.sel-medida button').forEach(b => b.onclick = () => {
 });
 $('#h-mes').onchange = e => { MES = e.target.value; REG = null; pintarHistorico(); };
 $('#h-print').onclick = () => window.print();
-$('#h-excel').onclick = () => { const r = HIST && HIST.registros.find(x => x.id === REG); if (r) UI.excel(r.coordinaciones, r.dia.filas, `CORTE DE VENTAS · VENEJUGOS 2015 · ${UI.fechaLarga(r.fecha)} · registrado ${UI.fechaHora(r.registrado)}`, `CORTE_${r.fecha}_${UI.hora(r.registrado).replace(/\D/g, '')}.xlsx`); };
+$('#h-excel').onclick = () => { const r = HIST && HIST.registros.find(x => x.id === REG); if (r) UI.excel(r.coordinaciones, VJ.vistaLinea(r.dia, LINEA).filas, `CORTE DE VENTAS · VENEJUGOS 2015 · ${UI.fechaLarga(r.fecha)} · ${VJ.LINEAS[LINEA]} · registrado ${UI.fechaHora(r.registrado)}`, `CORTE_${r.fecha}_${LINEA}_${UI.hora(r.registrado).replace(/\D/g, '')}.xlsx`); };
 
 /* ---------- Inicio ---------- */
 (async () => {

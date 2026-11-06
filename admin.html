@@ -214,8 +214,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--azul-med);outlin
 .slot b{font-weight:700;font-size:.9rem}
 .slot b em{font-style:normal;font-weight:600;color:var(--gris);font-size:.76rem;margin-left:6px}
 .slot .det{grid-column:2;font-size:.8rem;color:var(--gris);overflow-wrap:anywhere}
-.slot .btns{grid-row:1 / span 2;grid-column:3;display:flex;gap:12px;align-items:center}
-.slot .quitar{border:0;background:none;color:var(--gris);text-decoration:underline;cursor:pointer;font-size:.8rem}
+.slot .quitar{grid-row:1 / span 2;grid-column:3;border:0;background:none;color:var(--gris);text-decoration:underline;cursor:pointer;font-size:.8rem}
 .acciones{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .msg{margin-top:12px;font-size:.84rem;padding:10px 14px;border-radius:10px;display:none}
 .msg.ver{display:block}
@@ -248,7 +247,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--azul-med);outlin
       <p><b>Venejugos 2015</b> · Panel administrativo: carga, registro y publicación</p>
     </div>
     <nav class="nav" aria-label="Secciones">
-      <a href="index.html#corte" data-v="corte">Tablero</a>
+      <a href="index.html#corte" data-v="corte">Corte del día</a>
       <a href="index.html#historico" data-v="historico">Histórico</a>
       <a href="admin.html" data-v="admin" aria-current="page">Panel administrativo</a>
     </nav>
@@ -273,11 +272,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--azul-med);outlin
     <!-- 1. Archivos -->
     <div class="tarjeta c7">
       <h2>1. Archivos del corte</h2>
-      <p class="sub">Carga cada archivo en su casilla con <b>Cargar</b>: ventas de MobilVendor y ventas de Módulo B van por separado y el panel los cruza al procesar. También puedes soltarlos todos juntos aquí y cada uno se ubica por sus columnas. Se leen en este navegador.</p>
+      <p class="sub">Suelta todos los Excel a la vez; cada uno se reconoce por sus columnas. Se leen en este navegador.</p>
       <label class="zona" id="zona" for="archivos"><b>Suelta aquí los Excel</b><span>o haz clic para elegirlos (.xlsx, .xls, .csv)</span></label>
       <input id="archivos" type="file" accept=".xlsx,.xls,.xlsm,.csv" multiple hidden>
-      <input id="archivo-casilla" type="file" accept=".xlsx,.xls,.xlsm,.csv" hidden>
       <ul class="slots" id="slots"></ul>
+      <label class="chk"><input type="checkbox" id="fuera-real">Fuera de ruta real (por día de visita del maestro)</label>
+      <p class="sub" style="margin:-6px 0 0">Sin marcar se calcula igual que el cuadro de Excel: fuera de ruta = clientes atendidos y CUMPL% = (visitas comentadas + órdenes) ÷ visita PRG.</p>
       <div class="acciones"><button class="btn azul" id="b-procesar" type="button" disabled>Procesar corte</button></div>
       <div class="msg" id="m-proc" aria-live="polite"></div>
       <div id="resumen"></div>
@@ -320,7 +320,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--azul-med);outlin
       <div class="campo"><label for="gh-repo">Repositorio (usuario/repositorio)</label><input id="gh-repo" type="text" placeholder="Venejugosserver/CORTE-DE-VENTAS"></div>
       <div class="dos">
         <div class="campo"><label for="gh-rama">Rama</label><input id="gh-rama" type="text" value="main"></div>
-        <div class="campo"><label for="gh-carpeta">Carpeta de datos</label><input id="gh-carpeta" type="text" value="data"></div>
+        <div class="campo"><label for="gh-carpeta">Carpeta de datos (vacío = raíz)</label><input id="gh-carpeta" type="text" value="" placeholder="raíz del repositorio"></div>
       </div>
       <div class="campo"><label for="gh-token">Token (Contents: Read and write)</label><input id="gh-token" type="password" placeholder="github_pat_…" autocomplete="off"></div>
       <label class="chk"><input type="checkbox" id="gh-auto" checked>Publicar solo al registrar o anular</label>
@@ -379,8 +379,16 @@ const VJ = (() => {
   // Estatus del maestro que NO cuentan como visita programada (igual que la tabla dinámica del Excel)
   const ESTATUS_EXCLUIDOS = ['INACTIVO', 'CAMBIO DE RAZON SOCIAL', 'CERRADO', 'VACACIONES', ''];
   // Unidades de negocio que el Excel deja fuera de la venta diaria
-  const UN_EXCLUIDAS = ['DISTRIBUIDORA BIGOTT', '#N/A', 'CHOCOLATES ST. MORITZ', ''];
-  const UN_CIGARROS = 'DISTRIBUIDORA BIGOTT';
+  const UN_EXCLUIDAS = ['#N/A', 'CHOCOLATES ST. MORITZ', ''];
+  // Línea Bigott y cigarrera: unidad de negocio Bigott/cigarrera o línea de tabaco
+  const esCigarrera = (un, linea) => /BIGOTT|CIGARR/.test(un) || /TABACO|CIGARR/.test(linea);
+  // Clientes que no se toman en cuenta en ningún cálculo (por nombre o RIF)
+  const CLIENTES_EXCLUIDOS = ['INLUVENCA'];
+  const excluido = (nombre, rif) => CLIENTES_EXCLUIDOS.some(x => norm(nombre).includes(x) || norm(rif) === x);
+  // Vistas por línea de servicio
+  // Como en la tabla dinámica de órdenes del Excel: estas órdenes no se cuentan
+  const ORDENES_EXCLUIDAS = ['ANTHONY CHACON'];
+  const LINEAS = { base: 'Sin cigarros', todas: 'Todas las líneas', cig: 'Bigott y cigarrera' };
   const DIAS = ['DOMINGO', 'LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO'];
 
   const norm = s => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/\s+/g, ' ').trim();
@@ -393,7 +401,6 @@ const VJ = (() => {
     return isFinite(n) ? n : 0;
   };
   const r2 = n => Math.round(n * 100) / 100;
-  const r4 = n => Math.round(n * 10000) / 10000;
 
   // Convierte serial de Excel, Date o texto dd/mm/aaaa a 'AAAA-MM-DD'
   function aISO(v) {
@@ -429,27 +436,11 @@ const VJ = (() => {
   const pick = (col, ...nombres) => { for (const n of nombres) { const k = norm(n); if (k in col) return col[k]; } return -1; };
 
   /* ---------- Detección del tipo de archivo ---------- */
-  // Firma de columnas de cada archivo. Las ventas de MobilVendor y las órdenes por facturar comparten
-  // columnas (RucCliente, NombreVend, PrecioTotal): se separan por CodTrans (VT/NC = facturas) y por el nombre.
   function detectar(filas) {
     if (encabezado(filas, ['RIF', 'ASESOR ACTUAL', 'DIA DE VISITA', 'ESTATUS'])) return 'maestro';
-    if (encabezado(filas, ['total_venta_dolar', 'rif'])) {
-      // El consolidado viejo (ventas_corte) trae columnas calculadas; Módulo B viene crudo
-      return encabezado(filas, ['total_venta_dolar', 'rif', 'ASESOR ACTUAL']) || encabezado(filas, ['total_venta_dolar', 'rif', 'MODULOS']) ? 'ventas' : 'ventasB';
-    }
+    if (encabezado(filas, ['total_venta_dolar', 'rif'])) return 'ventas';
     if (encabezado(filas, ['Ruta (Nombre)', 'Cliente', 'Acción'])) return 'comentarios';
-    const h = encabezado(filas, ['RucCliente', 'NombreVend', 'PrecioTotal']);
-    if (h) {
-      const cT = pick(h.col, 'CodTrans'), cD = pick(h.col, 'DescTrans');
-      if (cT >= 0 || cD >= 0) {
-        for (let i = h.fila + 1; i < filas.length; i++) {
-          const f = filas[i] || [];
-          const t = cT >= 0 ? norm(f[cT]) : '', d = cD >= 0 ? norm(f[cD]) : '';
-          if (t === 'VT' || t === 'NC' || /FACTURA|NOTA CREDITO/.test(d)) return 'ventasMV';
-        }
-      }
-      return 'ordenes';
-    }
+    if (encabezado(filas, ['RucCliente', 'NombreVend', 'PrecioTotal'])) return 'ordenes';
     return null;
   }
 
@@ -459,18 +450,18 @@ const VJ = (() => {
     if (!h) throw new Error('No encontré las columnas RIF, ASESOR ACTUAL, DIA DE VISITA y ESTATUS en el maestro.');
     const c = h.col;
     const cRif = c['RIF'], cAs = c['ASESOR ACTUAL'], cDia = c['DIA DE VISITA'], cEst = c['ESTATUS'];
-    const cSup = pick(c, 'SUPERVISOR');
+    const cSup = pick(c, 'SUPERVISOR'), cCliM = pick(c, 'CLIENTE');
+    const rifsExcluidos = [];
     const clientes = {};            // rif -> [asesor, dia, estatus]
-    const varios = {};              // rif -> todas sus filas, cuando el mismo RIF está en varias carteras
     const prg = {};                 // asesor -> {LUNES: n, ...}
     const supervisorDe = {};
     let total = 0, activos = 0;
     for (let i = h.fila + 1; i < filas.length; i++) {
       const f = filas[i]; if (!f) continue;
       const rif = norm(f[cRif]); if (!rif || rif === 'RIF') continue;
+      if (excluido(cCliM >= 0 ? f[cCliM] : '', rif)) { rifsExcluidos.push(rif); continue; }
       const asesor = norm(f[cAs]); const dia = norm(f[cDia]); const est = norm(f[cEst]);
-      if (clientes[rif]) (varios[rif] = varios[rif] || [clientes[rif]]).push([asesor, dia, est]);
-      else clientes[rif] = [asesor, dia, est];
+      clientes[rif] = [asesor, dia, est];
       total++;
       if (cSup >= 0 && asesor && f[cSup]) supervisorDe[asesor] = norm(f[cSup]);
       if (!ESTATUS_EXCLUIDOS.includes(est) && asesor && dia) {
@@ -479,196 +470,94 @@ const VJ = (() => {
         activos++;
       }
     }
-    return { clientes, varios, prg, supervisorDe, total, activos };
+    return { clientes, prg, supervisorDe, total, activos, rifsExcluidos };
   }
 
-  /* ---------- Ventas: MobilVendor + Módulo B (cruce nativo) ---------- */
-  // Unidad de negocio: primero el catálogo de productos (sale del consolidado de Excel), luego reglas por marca.
-  const ALIAS_UN = {
-    'NIM': 'NESTLE', 'NP': 'NESTLE', 'BIG': 'DISTRIBUIDORA BIGOTT', 'BIGOTT': 'DISTRIBUIDORA BIGOTT', 'CMG': 'ARAUCA',
-    'KKO REAL': 'CACAO REAL', 'PASTORENA': 'LA PASTORENA', 'PUIG': 'GALLETAS PUIG', 'RDIPROPAL': 'REPRESENTACIONES DIPROPAL',
-    'INDUSTRIAS JAU': 'FRUGY', 'MONTALBAN': 'PVA'
-  };
-  // Excepciones del catálogo de productos (Módulo B y MobilVendor) donde la marca del sistema no basta
-  const PRODUCTOS = {"MV:DES_PAGO": "AJUSTES", "MV:DFPRECIOE": "AJUSTES", "MV:DFPRECIO": "AJUSTES", "MV:D/CP2": "AJUSTES", "B:2705": "GALLETAS PUIG", "B:675": "LACTALIS", "B:2470": "OKA LOKA", "B:2297": "DISTRIBUIDORA BIGOTT"};
-  const esTabaco = linea => /TABACO|CIGARR/.test(linea);
-  function unidadNegocio(mod, codprod, crudo, linea) {
-    const k = mod + ':' + norm(codprod);
-    if (k in PRODUCTOS) return PRODUCTOS[k];
-    let un = norm(crudo);
-    un = ALIAS_UN[un] || un;
-    // Bigott también distribuye yesqueros BIC: solo tabaco y cigarrillos van a Cigarros
-    if (un === UN_CIGARROS && linea && !esTabaco(linea)) un = 'BIC';
-    return un || 'SIN CLASIFICAR';
-  }
-  // Vendedores cuya venta es siempre suya, aunque el cliente sea de la cartera de otro asesor
-  // (Liliana vende cigarros a clientes de otras rutas; oficina y empleados facturan por su cuenta).
-  // La ruta D11 es la de empleados. Para agregar un vendedor, escríbelo aquí en mayúsculas y sin acentos.
-  const VENTA_PROPIA = {
-    'LILIANA ROMERO': 'LILIANA ROMERO',
-    'DIRECTO': 'DIRECTO OFICINA', 'DIRECTO OFICINA': 'DIRECTO OFICINA', 'ANTHONY URRETA': 'DIRECTO OFICINA',
-    'VENEJUGOS EMPLEADOS': 'VENEJUGOS EMPLEADOS', 'YEIMY MARTINEZ': 'VENEJUGOS EMPLEADOS', 'CARLOS PATRIARCA': 'VENEJUGOS EMPLEADOS'
-  };
-  const RUTA_EMPLEADOS = 'D11';
-  function ventaPropia(vend, ruta) {
-    const a = VENTA_PROPIA[vend];
-    if (!a) return '';
-    return ruta === RUTA_EMPLEADOS && a === 'DIRECTO OFICINA' ? 'VENEJUGOS EMPLEADOS' : a;
-  }
-  // Grupos o vendedores del sistema que no son un asesor del cuadro
-  const ALIAS_ASESOR = { 'TELEVENTAS': 'MARY SUAREZ', 'DIRECTO': 'DIRECTO OFICINA' };
-  const ASESORES = new Set(COORDINACIONES.flatMap(g => g.asesores));
-  function asesorRespaldo(candidatos) {
-    for (const c of candidatos) if (ASESORES.has(c)) return c;
-    for (const c of candidatos) if (ALIAS_ASESOR[c]) return ALIAS_ASESOR[c];
-    return candidatos.find(Boolean) || 'SIN ASESOR';
-  }
-
-  // MobilVendor · ReporteGeneral (hoja Ventas): VT = factura, NC = nota de crédito (devolución)
-  function normalizarMV(filas) {
-    const h = encabezado(filas, ['RucCliente', 'NombreVend', 'PrecioTotal']);
-    if (!h) throw new Error('No encontré RucCliente, NombreVend y PrecioTotal en el archivo de MobilVendor.');
-    const c = h.col, P = (...n) => pick(c, ...n);
-    const cF = P('FechaFactura'), cDoc = P('NumeroFactura'), cRif = P('RucCliente'), cCli = P('RazonSocial'),
-      cGr = P('GrupoCliente'), cVen = P('NombreVend'), cT = P('CodTrans'), cZona = P('DescZona'),
-      cProd = P('CodProducto'), cMarca = P('CodMarca'), cMarcaD = P('DescrFamilia', 'DescrMarca'), cCat = P('DescrCategoria'), cM = P('PrecioTotal');
-    const out = [];
-    for (let i = h.fila + 1; i < filas.length; i++) {
-      const f = filas[i]; if (!f) continue;
-      const fecha = aISO(f[cF]); if (!fecha) continue;
-      const monto = num(f[cM]);
-      const t = cT >= 0 ? norm(f[cT]) : '';
-      const zona = cZona >= 0 ? norm(f[cZona]).split(' ') : [];
-      const vend = norm(f[cVen]);
-      out.push({
-        mod: 'MOBILVENDOR', fecha, doc: String(f[cDoc] ?? ''), prod: norm(f[cProd]), rif: norm(f[cRif]), cliente: String(f[cCli] ?? '').trim(),
-        candidatos: [norm(f[cGr]), vend], asesor: '', propio: ventaPropia(vend, zona[zona.length - 1] || ''),
-        tipo: t === 'NC' ? 'DEVOLUCION' : t === 'VT' ? 'VENTA' : (monto < 0 ? 'DEVOLUCION' : 'VENTA'),
-        un: unidadNegocio('MV', f[cProd], f[cMarca], cCat >= 0 ? norm(f[cCat]) : ''),
-        marca: (cMarcaD >= 0 ? norm(f[cMarcaD]) : '') || 'SIN MARCA',
-        monto, diaV: DIAS.includes(zona[0]) ? zona[0] : ''
-      });
-    }
-    return out;
-  }
-  // Módulo B: mismo formato del consolidado (sin columnas calculadas). Devolución = monto negativo.
-  function normalizarB(filas, mod = 'B') {
+  /* ---------- Ventas (corte de facturación) ---------- */
+  function procesarVentas(filas, maestro) {
     const h = encabezado(filas, ['total_venta_dolar', 'rif']);
-    if (!h) throw new Error('No encontré total_venta_dolar y rif en el archivo de Módulo B.');
-    const c = h.col, P = (...n) => pick(c, ...n);
-    const cF = P('fecha', 'fechafact'), cDoc = P('documento'), cRif = P('RIF REAL', 'rif'), cCli = P('nomclie'),
-      cVen = P('nomvend'), cAs = P('ASESOR ACTUAL'), cTipo = P('TIPOVTA'), cRuta = P('ruta'), cDiaV = P('DIA DE VISITA'),
-      cProd = P('codprod'), cUN = P('UNIDAD NEGOCIO', 'unidad_negocio'), cLin = P('linea'), cM = P('total_venta_dolar'), cMod = P('MODULOS'), cMar = P('MARCA', 'marca');
-    const out = [];
-    for (let i = h.fila + 1; i < filas.length; i++) {
-      const f = filas[i]; if (!f) continue;
-      const fecha = aISO(f[cF]); if (!fecha) continue;
-      const rif = norm(f[cRif]), monto = num(f[cM]);
-      if (!rif && !monto) continue;
-      let tipo = cTipo >= 0 ? norm(f[cTipo]) : '';
-      if (tipo !== 'VENTA' && tipo !== 'DEVOLUCION') tipo = monto < 0 ? 'DEVOLUCION' : 'VENTA';
-      const asesor = cAs >= 0 ? norm(f[cAs]) : '';
-      const vend = norm(f[cVen]), ruta = cRuta >= 0 ? norm(f[cRuta]) : '';
-      const m = cMod >= 0 && norm(f[cMod]) ? (norm(f[cMod]) === 'B' ? 'B' : 'MOBILVENDOR') : mod;
-      // En el consolidado la unidad ya viene del catálogo; en Módulo B se clasifica aquí
-      const un = cAs >= 0 ? (norm(f[cUN]) || 'SIN CLASIFICAR') : unidadNegocio('B', f[cProd], f[cUN], cLin >= 0 ? norm(f[cLin]) : '');
-      out.push({
-        mod: m, fecha, doc: String(f[cDoc] ?? ''), prod: cProd >= 0 ? norm(f[cProd]) : '', rif, cliente: String(f[cCli] ?? '').trim(),
-        candidatos: ruta === RUTA_EMPLEADOS ? ['VENEJUGOS EMPLEADOS', vend] : [vend], propio: ventaPropia(vend, ruta),
-        asesor: asesor === '#N/A' ? '' : asesor,
-        tipo, un, monto, diaV: cDiaV >= 0 ? norm(f[cDiaV]) : '',
-        marca: (cMar >= 0 ? norm(f[cMar]) : '') || 'SIN MARCA'
-      });
-    }
-    return out;
-  }
+    if (!h) throw new Error('No encontré las columnas total_venta_dolar y rif en el archivo de ventas.');
+    const c = h.col;
+    const cAs = pick(c, 'ASESOR ACTUAL'), cNomV = pick(c, 'nomvend');
+    const cTipo = pick(c, 'TIPOVTA');
+    const cUN = pick(c, 'UNIDAD NEGOCIO', 'unidad_negocio');
+    const cRifReal = pick(c, 'RIF REAL'), cRif = pick(c, 'rif');
+    const cFecha = pick(c, 'fecha', 'fechafact');
+    const cDiaV = pick(c, 'DIA DE VISITA');
+    const cMonto = pick(c, 'total_venta_dolar');
+    const cCli = pick(c, 'nomclie');
+    const cDoc = pick(c, 'documento');
 
-  // Fila del maestro para una línea de venta. Si el RIF está en varias carteras se usa la del asesor
-  // que aparece en la factura; si ninguno coincide, la de un asesor de calle (no de venta propia).
-  const PROPIOS = new Set(Object.values(VENTA_PROPIA));
-  function filaMaestro(maestro, L) {
-    if (!maestro) return null;
-    const opciones = (maestro.varios && maestro.varios[L.rif]) || (maestro.clientes[L.rif] ? [maestro.clientes[L.rif]] : []);
-    const activa = x => !ESTATUS_EXCLUIDOS.includes(x[2]);
-    return opciones.find(x => L.candidatos.includes(x[0]))
-      || opciones.find(x => activa(x) && !PROPIOS.has(x[0]))
-      || opciones.find(x => !PROPIOS.has(x[0]))
-      || opciones[0] || null;
-  }
-  // Une las líneas de todas las fuentes y arma el cuadro por día y asesor
-  function procesarVentas(lineas, maestro) {
+    const cLinea = pick(c, 'LINEA', 'linea');
+    const cMarca = pick(c, 'MARCA', 'marca');
+    const rifsFuera = new Set((maestro && maestro.rifsExcluidos) || []);
     const dias = {};
     const sinAsesor = new Set();
-    const porModulo = {};
-    for (const L of lineas) {
-      const enMaestro = filaMaestro(maestro, L);
-      // Asesor: el consolidado ya lo trae; si no, venta propia del vendedor, luego el maestro (cartera actual)
-      // y, si el cliente no está en el maestro, el grupo o vendedor del archivo
-      let asesor = L.asesor || L.propio || (enMaestro && enMaestro[0] && enMaestro[0] !== '#N/A' ? enMaestro[0] : '');
-      if (!asesor) { asesor = asesorRespaldo(L.candidatos); sinAsesor.add(L.rif); }
-      const diaVisita = enMaestro ? enMaestro[1] : L.diaV;
-      const M = porModulo[L.mod] = porModulo[L.mod] || { lineas: 0, venta: 0, devol: 0, cig: 0, docs: new Set() };
-      M.lineas++; M.docs.add(L.doc);
+    const exclusion = { lineas: 0, monto: 0, clientes: new Set() };
+    let filasLeidas = 0;
+    const nuevoSeg = () => ({ asesores: {}, unidades: {}, clientes: {} });
+    for (let i = h.fila + 1; i < filas.length; i++) {
+      const f = filas[i]; if (!f) continue;
+      const fecha = aISO(f[cFecha]); if (!fecha) continue;
+      const rif = norm(cRifReal >= 0 && f[cRifReal] ? f[cRifReal] : f[cRif]);
+      const monto = num(f[cMonto]);
+      if (!rif && !monto) continue;
+      const cliente = cCli >= 0 ? String(f[cCli] ?? '').trim() : rif;
+      if (rifsFuera.has(rif) || excluido(cliente, rif)) { exclusion.lineas++; exclusion.monto += monto; exclusion.clientes.add(cliente || rif); continue; }
+      filasLeidas++;
+      const enMaestro = maestro && maestro.clientes[rif];
+      let asesor = cAs >= 0 ? norm(f[cAs]) : '';
+      if (!asesor || asesor === '#N/A') asesor = enMaestro ? enMaestro[0] : '';
+      if (!asesor || asesor === '#N/A') { asesor = cNomV >= 0 ? norm(f[cNomV]) : 'SIN ASESOR'; sinAsesor.add(rif); }
+      let tipo = cTipo >= 0 ? norm(f[cTipo]) : '';
+      if (tipo !== 'VENTA' && tipo !== 'DEVOLUCION') tipo = monto < 0 ? 'DEVOLUCION' : 'VENTA';
+      const un = cUN >= 0 ? norm(f[cUN]) : '';
+      const linea = cLinea >= 0 ? norm(f[cLinea]) : '';
+      const diaVisita = enMaestro ? enMaestro[1] : (cDiaV >= 0 ? norm(f[cDiaV]) : '');
 
-      const D = dias[L.fecha] = dias[L.fecha] || { asesores: {}, unidades: {}, clientes: {}, cigarros: 0, docs: new Set(), det: new Map(), nom: {}, dvAR: {} };
-      // Detalle asesor × cliente × línea × marca: permite filtrar por coordinación, vendedor, línea y marca
-      if (L.un === UN_CIGARROS || !UN_EXCLUIDAS.includes(L.un)) {
-        const kd = asesor + '\u0001' + L.rif + '\u0001' + L.un + '\u0001' + (L.marca || 'SIN MARCA');
-        const X = D.det.get(kd) || { v: 0, d: 0, dv: -1 };
-        if (L.un === UN_CIGARROS || L.tipo === 'VENTA') X.v += L.monto; else X.d += L.monto;
-        X.dv = DIAS.indexOf(diaVisita);
-        D.det.set(kd, X);
-        if (!D.nom[L.rif]) D.nom[L.rif] = L.cliente || L.rif;
+      const D = dias[fecha] = dias[fecha] || { seg: { base: nuevoSeg(), todas: nuevoSeg(), cig: nuevoSeg() }, cigarros: 0, docs: new Set() };
+      if (cDoc >= 0 && f[cDoc]) D.docs.add(String(f[cDoc]));
+      const cig = esCigarrera(un, linea);
+      if (cig) D.cigarros += monto;
+      const segs = ['todas'];
+      if (cig) segs.push('cig');
+      else if (!UN_EXCLUIDAS.includes(un)) segs.push('base');
+      for (const sg of segs) {
+        const S = D.seg[sg];
+        const A = S.asesores[asesor] = S.asesores[asesor] || { venta: 0, devol: 0, netoRif: {}, diaRif: {} };
+        if (tipo === 'VENTA') A.venta += monto; else A.devol += monto;
+        A.netoRif[rif] = (A.netoRif[rif] || 0) + monto;
+        A.diaRif[rif] = diaVisita;
+        // En la vista de cigarros el desglose es por marca; en las demás, por unidad de negocio
+        const clave = sg === 'cig' ? (cMarca >= 0 && f[cMarca] ? norm(f[cMarca]) : un) : (un || 'SIN UNIDAD');
+        S.unidades[clave] = (S.unidades[clave] || 0) + monto;
+        const K = S.clientes[rif] = S.clientes[rif] || { n: cliente, a: asesor, v: 0 };
+        K.v += monto;
       }
-      if (L.doc) D.docs.add(L.mod + ':' + L.doc);
-      const A = D.asesores[asesor] = D.asesores[asesor] || { venta: 0, devol: 0, cig: 0, netoRif: {}, diaRif: {} };
-      if (L.un === UN_CIGARROS) { A.cig += L.monto; D.cigarros += L.monto; M.cig += L.monto; continue; }
-      if (UN_EXCLUIDAS.includes(L.un)) continue;
-      if (L.tipo === 'VENTA') { A.venta += L.monto; M.venta += L.monto; } else { A.devol += L.monto; M.devol += L.monto; }
-      A.netoRif[L.rif] = (A.netoRif[L.rif] || 0) + L.monto;
-      A.diaRif[L.rif] = diaVisita;
-      D.dvAR[asesor + '\u0001' + L.rif] = DIAS.indexOf(diaVisita);
-      D.unidades[L.un] = (D.unidades[L.un] || 0) + L.monto;
-      const K = D.clientes[L.rif] = D.clientes[L.rif] || { n: L.cliente || L.rif, a: asesor, v: 0 };
-      K.v += L.monto;
     }
+    // Consolidar por día y por línea
     const salida = {};
     for (const [fecha, D] of Object.entries(dias)) {
       const ds = diaSemana(fecha);
-      const asesores = {};
-      for (const [as, A] of Object.entries(D.asesores)) {
-        let atendidos = 0, fuera = 0;
-        for (const [rif, neto] of Object.entries(A.netoRif)) {
-          if (neto > 0) { atendidos++; if (A.diaRif[rif] !== ds) fuera++; }
+      const lineas = {};
+      for (const [sg, S] of Object.entries(D.seg)) {
+        const asesores = {};
+        for (const [as, A] of Object.entries(S.asesores)) {
+          let atendidos = 0, fuera = 0;
+          for (const [rif, neto] of Object.entries(A.netoRif)) {
+            if (neto > 0) { atendidos++; if (A.diaRif[rif] !== ds) fuera++; }
+          }
+          asesores[as] = { venta: r2(A.venta), devol: r2(A.devol), atendidos, fuera };
         }
-        asesores[as] = { venta: r2(A.venta), devol: r2(A.devol), cig: r2(A.cig), atendidos, fuera };
+        const unidades = Object.entries(S.unidades).map(([k, v]) => [k, r2(v)]).sort((a, b) => b[1] - a[1]);
+        const top = Object.values(S.clientes).sort((a, b) => b.v - a.v).slice(0, 10).map(k => ({ n: k.n, a: k.a, v: r2(k.v) }));
+        lineas[sg] = { asesores, unidades, top };
       }
-      const unidades = Object.entries(D.unidades).map(([k, v]) => [k, r2(v)]).sort((a, b) => b[1] - a[1]);
-      const top = Object.values(D.clientes).sort((a, b) => b.v - a.v).slice(0, 10).map(k => ({ n: k.n, a: k.a, v: r2(k.v) }));
-      salida[fecha] = { diaSemana: ds, asesores, unidades, top, cigarros: r2(D.cigarros), facturas: D.docs.size, det: compactarDetalle(D) };
+      salida[fecha] = { diaSemana: ds, lineas, cigarros: r2(D.cigarros), facturas: D.docs.size };
     }
-    const modulos = {};
-    for (const [m, M] of Object.entries(porModulo)) modulos[m] = { lineas: M.lineas, documentos: M.docs.size, venta: r2(M.venta), devol: r2(M.devol), cig: r2(M.cig) };
-    return { dias: salida, filas: lineas.length, sinAsesor: sinAsesor.size, modulos };
+    return { dias: salida, filas: filasLeidas, sinAsesor: sinAsesor.size, exclusion: { lineas: exclusion.lineas, monto: r2(exclusion.monto), clientes: [...exclusion.clientes] } };
   }
-  // Detalle compacto: diccionarios de asesores, clientes, líneas y marcas + filas de índices
-  // r = [asesor, cliente, línea, marca, venta, devolución, día de visita (0 domingo … 6 sábado, -1 sin dato)]
-  function compactarDetalle(D) {
-    const a = [], c = [], u = [], m = [], ia = {}, ic = {}, iu = {}, im = {}, r = [];
-    const idx = (lista, mapa, k, val) => (k in mapa) ? mapa[k] : (mapa[k] = lista.push(val === undefined ? k : val) - 1);
-    for (const [k, X] of D.det) {
-      const [as, rif, un, marca] = k.split('\u0001');
-      if (Math.abs(X.v) < 0.005 && Math.abs(X.d) < 0.005) continue;
-      const dv = D.dvAR[as + '\u0001' + rif];
-      r.push([idx(a, ia, as), idx(c, ic, rif, [rif, D.nom[rif] || rif]), idx(u, iu, un), idx(m, im, marca), r4(X.v), r4(X.d), dv === undefined ? X.dv : dv]);
-    }
-    return { a, c, u, m, r };
-  }
-  // Documentos que aparecen en los dos módulos (no debería pasar: cada sistema tiene su numeración)
-  function cruceDocumentos(mv, b) {
-    const a = new Set(mv.map(l => l.doc).filter(Boolean));
-    return [...new Set(b.map(l => l.doc).filter(d => a.has(d)))];
-  }
+
   /* ---------- Comentarios MobilVendor (visitas comentadas) ---------- */
   function procesarComentarios(filas) {
     const h = encabezado(filas, ['Ruta (Nombre)', 'Cliente', 'Acción']);
@@ -689,59 +578,81 @@ const VJ = (() => {
   }
 
   /* ---------- Órdenes por facturar ---------- */
-  function procesarOrdenes(filas, fechaPorDefecto) {
+  // Las órdenes por facturar son las pendientes al momento del corte: igual que en el Excel,
+  // se suman al día del corte (último día del archivo de ventas), sin importar la fecha de la orden.
+  function procesarOrdenes(filas, fechaCorte, usarFechaOrden = false) {
     const h = encabezado(filas, ['RucCliente', 'NombreVend', 'PrecioTotal']);
     if (!h) throw new Error('No encontré las columnas RucCliente, NombreVend y PrecioTotal en el archivo de órdenes.');
     const c = h.col;
     const cAs = pick(c, 'ASESOR ACTUAL'), cNV = pick(c, 'NombreVend');
     const cF = pick(c, 'FechaFactura');
+    const cRS = pick(c, 'RazónSocial', 'RazonSocial');
+    const cols = ['NombreProv', 'DescrMarca', 'DescrCategoría', 'DescrSubCategoría', 'DescrFamilia'].map(n => pick(c, n)).filter(x => x >= 0);
     const res = {};
     for (let i = h.fila + 1; i < filas.length; i++) {
       const f = filas[i]; if (!f) continue;
       const rif = norm(f[c['RUCCLIENTE']]); if (!rif) continue;
-      const fecha = aISO(f[cF]) || fechaPorDefecto;
-      let as = cAs >= 0 ? norm(f[cAs]) : '';
-      if (!as || as === '#N/A') as = norm(f[cNV]);
-      const R = ((res[fecha] = res[fecha] || {})[as] = res[fecha][as] || { rifs: new Set(), monto: 0 });
-      R.rifs.add(rif); R.monto += num(f[c['PRECIOTOTAL']]);
+      if (excluido(cRS >= 0 ? f[cRS] : '', rif)) continue;
+      const fecha = (usarFechaOrden && aISO(f[cF])) || fechaCorte;
+      // El Excel agrupa las órdenes por NombreVend (vendedor de MobilVendor)
+      let as = norm(f[cNV]);
+      if (!as && cAs >= 0) as = norm(f[cAs]);
+      if (!as || ORDENES_EXCLUIDAS.includes(as)) continue;
+      const texto = cols.map(k => norm(f[k])).join(' ');
+      const cig = esCigarrera(texto, texto);
+      const monto = num(f[c['PRECIOTOTAL']]);
+      const R = ((res[fecha] = res[fecha] || {})[as] = res[fecha][as] || { todas: { rifs: new Set(), monto: 0 }, base: { rifs: new Set(), monto: 0 }, cig: { rifs: new Set(), monto: 0 } });
+      for (const sg of ['todas', cig ? 'cig' : 'base']) { R[sg].rifs.add(rif); R[sg].monto += monto; }
     }
     const out = {};
-    for (const [f, m] of Object.entries(res)) { out[f] = {}; for (const [a, R] of Object.entries(m)) out[f][a] = { n: R.rifs.size, monto: r2(R.monto) }; }
+    for (const [f, m] of Object.entries(res)) {
+      out[f] = {};
+      for (const [a, R] of Object.entries(m)) out[f][a] = Object.fromEntries(Object.entries(R).map(([k, x]) => [k, { n: x.rifs.size, monto: r2(x.monto) }]));
+    }
     return out;
   }
-
-  /* ---------- Armar el corte final ---------- */
-  function armarCorte({ maestro, ventas, comentarios = {}, ordenes = {}, archivos = {} }) {
+  // fueraReal = false calcula como el cuadro de Excel: fuera de ruta = clientes atendidos,
+  // y el cumplimiento queda (visitas comentadas + órdenes) ÷ visita programada.
+  function armarCorte({ maestro, ventas, comentarios = {}, ordenes = {}, archivos = {}, fueraReal = false }) {
     const fechas = Object.keys(ventas.dias).sort();
     const conocidos = new Set(COORDINACIONES.flatMap(g => g.asesores));
     const extra = new Set();
-    for (const f of fechas) for (const a of Object.keys(ventas.dias[f].asesores)) if (!conocidos.has(a)) extra.add(a);
+    for (const f of fechas) for (const a of Object.keys(ventas.dias[f].lineas.todas.asesores)) if (!conocidos.has(a)) extra.add(a);
     const grupos = COORDINACIONES.map(g => ({ ...g }));
     if (extra.size) grupos.push({ nombre: 'OTROS', color: COLOR_OTROS, asesores: [...extra].sort() });
+    const vacio = { venta: 0, devol: 0, atendidos: 0, fuera: 0 }, sinOrden = { n: 0, monto: 0 };
 
     const dias = {};
     for (const f of fechas) {
       const V = ventas.dias[f];
-      const filas = {};
-      for (const g of grupos) for (const a of g.asesores) {
-        const v = V.asesores[a] || { venta: 0, devol: 0, cig: 0, atendidos: 0, fuera: 0 };
-        const prgA = maestro.prg[a];
-        const o = (ordenes[f] || {})[a] || { n: 0, monto: 0 };
-        filas[a] = {
-          prg: SIN_PRG.includes(a) ? null : SIN_RUTA.includes(a) ? 0 : (prgA ? (prgA[V.diaSemana] || 0) : 0),
-          atendidos: v.atendidos, fuera: v.fuera,
-          ordenes: o.n, montoOrdenes: o.monto,
-          comentadas: (comentarios[f] || {})[a] || 0,
-          venta: r2(v.venta + o.monto), facturado: v.venta, devol: v.devol, cig: v.cig
-        };
-      }
-      dias[f] = { diaSemana: V.diaSemana, filas, unidades: V.unidades.slice(0, 15), top: V.top, cigarros: V.cigarros, facturas: V.facturas, det: V.det };
+      const vista = sg => {
+        const L = V.lineas[sg], filas = {};
+        for (const g of grupos) for (const a of g.asesores) {
+          const v = L.asesores[a] || vacio;
+          const prgA = maestro.prg[a];
+          // En la vista sin cigarros las órdenes entran completas, igual que en el Excel
+          const o = (((ordenes[f] || {})[a]) || {})[sg === 'base' ? 'todas' : sg] || sinOrden;
+          filas[a] = {
+            prg: SIN_PRG.includes(a) ? null : SIN_RUTA.includes(a) ? 0 : (prgA ? (prgA[V.diaSemana] || 0) : 0),
+            atendidos: v.atendidos, fuera: fueraReal ? v.fuera : v.atendidos,
+            ordenes: o.n, montoOrdenes: o.monto,
+            comentadas: (comentarios[f] || {})[a] || 0,
+            venta: r2(v.venta + o.monto), facturado: v.venta, devol: v.devol
+          };
+        }
+        return { filas, unidades: L.unidades.slice(0, 15), top: L.top };
+      };
+      const base = vista('base');
+      // La vista base (sin cigarros, igual al cuadro de Excel) queda en la raíz del día
+      dias[f] = { diaSemana: V.diaSemana, ...base, cigarros: V.cigarros, facturas: V.facturas, lineas: { todas: vista('todas'), cig: vista('cig') } };
     }
     return {
-      version: 1,
+      version: 2,
+      fueraReal,
       generado: new Date().toISOString(),
       archivos,
       maestro: { total: maestro.total, activos: maestro.activos },
+      excluidos: ventas.exclusion,
       coordinaciones: grupos,
       fechas,
       dias,
@@ -749,10 +660,15 @@ const VJ = (() => {
       tieneOrdenes: Object.keys(ordenes).length > 0
     };
   }
+  // Datos de un día en la línea de servicio elegida (compatible con cortes anteriores sin líneas)
+  function vistaLinea(dia, linea) {
+    if (linea && linea !== 'base' && dia.lineas && dia.lineas[linea]) return { ...dia.lineas[linea], cigarros: dia.cigarros, facturas: dia.facturas, diaSemana: dia.diaSemana };
+    return dia;
+  }
 
   // Totales de un grupo de filas con la misma fórmula de cumplimiento del cuadro
   function totales(filas) {
-    const t = { prg: 0, atendidos: 0, fuera: 0, ordenes: 0, comentadas: 0, venta: 0, devol: 0, cig: 0 };
+    const t = { prg: 0, atendidos: 0, fuera: 0, ordenes: 0, comentadas: 0, venta: 0, devol: 0, cig: 0, montoOrdenes: 0, facturado: 0 };
     let logrado = 0;
     for (const r of filas) {
       for (const k in t) t[k] += r[k] || 0;
@@ -768,78 +684,6 @@ const VJ = (() => {
     return (r.comentadas + r.ordenes + (r.atendidos - r.fuera)) / r.prg;
   }
 
-  /* ---------- Tablero: agregar un rango de días con filtros ---------- */
-  // dias: [{ fecha, dia }] donde dia es un día del corte o del registro (con o sin detalle)
-  // F: { asesores: Set | null, lineas: Set | null, marcas: Set ('LÍNEA›MARCA') | null }
-  const SEP_MARCA = '›';
-  function agregar(dias, F = {}) {
-    const lineaOn = !!(F.lineas || F.marcas);
-    const okA = a => !F.asesores || F.asesores.has(a);
-    const okL = (un, mk) => (!F.lineas || F.lineas.has(un)) && (!F.marcas || F.marcas.has(un + SEP_MARCA + mk));
-    const base = () => ({ prg: 0, prgNulo: false, atendidos: 0, fuera: 0, ordenes: 0, montoOrdenes: 0, comentadas: 0, facturado: 0, devol: 0, cig: 0 });
-    const filas = {}, lineas = {}, clientes = {};
-    let cig = 0, facturas = 0;
-    const sinDetalle = [];
-    const sumaLinea = (un, mk, v, d, rif, esCig) => {
-      const L = lineas[un] = lineas[un] || { v: 0, d: 0, cig: esCig, cli: new Set(), marcas: {} };
-      L.v += v; L.d += d; if (rif) L.cli.add(rif);
-      if (mk === null) return;
-      const M = L.marcas[mk] = L.marcas[mk] || { v: 0, d: 0, cli: new Set() };
-      M.v += v; M.d += d; if (rif) M.cli.add(rif);
-    };
-    for (const { dia } of dias) {
-      const ds = DIAS.indexOf(dia.diaSemana);
-      facturas += dia.facturas || 0;
-      for (const [a, r] of Object.entries(dia.filas || {})) {
-        if (!okA(a)) continue;
-        const t = filas[a] = filas[a] || base();
-        if (r.prg === null || r.prg === undefined) t.prgNulo = true; else t.prg += r.prg || 0;
-        t.ordenes += r.ordenes || 0; t.montoOrdenes += r.montoOrdenes || 0; t.comentadas += r.comentadas || 0;
-        if (!dia.det) {
-          // Días sin detalle (cortes viejos): solo se pueden filtrar por asesor
-          t.facturado += r.facturado ?? ((r.venta || 0) - (r.montoOrdenes || 0));
-          t.devol += r.devol || 0; t.cig += r.cig || 0; cig += r.cig || 0;
-          t.atendidos += r.atendidos || 0; t.fuera += r.fuera || 0;
-        }
-      }
-      if (!dia.det) {
-        sinDetalle.push(dia);
-        if (!F.asesores) {
-          for (const [un, v] of dia.unidades || []) sumaLinea(un, null, v, 0, null, false);
-          for (const k of dia.top || []) { const C = clientes[k.n] = clientes[k.n] || { n: k.n, a: k.a, v: 0 }; C.v += k.v; }
-        }
-        continue;
-      }
-      const { a, c, u, m, r } = dia.det;
-      const neto = {};
-      for (const [ai, ci, ui, mi, v, d, dv] of r) {
-        const as = a[ai], un = u[ui], mk = m[mi];
-        if (!okA(as) || !okL(un, mk)) continue;
-        const rif = c[ci][0];
-        const t = filas[as] = filas[as] || base();
-        if (un === UN_CIGARROS) { t.cig += v + d; cig += v + d; sumaLinea(un, mk, v + d, 0, rif, true); continue; }
-        t.facturado += v; t.devol += d;
-        const N = neto[ai + '|' + ci] = neto[ai + '|' + ci] || { as, n: 0, dv };
-        N.n += v + d; N.dv = dv;
-        sumaLinea(un, mk, v, d, rif, false);
-        const C = clientes[rif] = clientes[rif] || { n: c[ci][1], a: as, v: 0 };
-        C.v += v + d;
-      }
-      for (const N of Object.values(neto)) if (N.n > 0) { filas[N.as].atendidos++; if (N.dv !== ds) filas[N.as].fuera++; }
-    }
-    for (const t of Object.values(filas)) {
-      t.venta = r2(t.facturado + (lineaOn ? 0 : t.montoOrdenes));
-      t.facturado = r2(t.facturado); t.devol = r2(t.devol); t.cig = r2(t.cig);
-      if (t.prgNulo && !t.prg) t.prg = null;
-      delete t.prgNulo;
-    }
-    const lista = Object.entries(lineas).map(([un, L]) => ({
-      un, v: r2(L.v), d: r2(L.d), cig: L.cig, clientes: L.cli.size,
-      marcas: Object.entries(L.marcas).map(([mk, M]) => ({ mk, v: r2(M.v), d: r2(M.d), clientes: M.cli.size })).sort((x, y) => y.v - x.v)
-    })).sort((x, y) => (x.cig - y.cig) || (y.v - x.v));
-    const top = Object.values(clientes).sort((x, y) => y.v - x.v).slice(0, 10).map(k => ({ n: k.n, a: k.a, v: r2(k.v) }));
-    return { filas, lineas: lista, top, cig: r2(cig), facturas, sinDetalle: sinDetalle.length, lineaOn };
-  }
 
   /* ---------- Histórico de cortes registrados ---------- */
   // Congela cómo quedó el corte de un día en el momento de registrarlo
@@ -884,9 +728,9 @@ const VJ = (() => {
     }
     return out;
   }
-  function totalesRegistro(r) { return totales(Object.values(r.dia.filas)); }
+  function totalesRegistro(r, linea) { return totales(Object.values(vistaLinea(r.dia, linea).filas)); }
 
-  return { crearRegistro, historialVacio, fusionarHistorial, representantes, totalesRegistro, COORDINACIONES, norm, aISO, diaSemana, DIAS, UN_CIGARROS, SEP_MARCA, agregar, detectar, procesarMaestro, normalizarMV, normalizarB, procesarVentas, cruceDocumentos, procesarComentarios, procesarOrdenes, armarCorte, totales, cumplimiento };
+  return { LINEAS, CLIENTES_EXCLUIDOS, vistaLinea, crearRegistro, historialVacio, fusionarHistorial, representantes, totalesRegistro, COORDINACIONES, norm, aISO, diaSemana, detectar, procesarMaestro, procesarVentas, procesarComentarios, procesarOrdenes, armarCorte, totales, cumplimiento };
 })();
 if (typeof module !== 'undefined') module.exports = VJ;
 </script>
@@ -898,7 +742,7 @@ const UI = (() => {
   const f$ = new Intl.NumberFormat('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const fN = new Intl.NumberFormat('es-VE');
   const dinero = v => Math.abs(v || 0) < 0.005 ? '-' : f$.format(v);
-  const usd = v => (v < 0 ? '−$ ' : '$ ') + f$.format(Math.abs(v || 0));
+  const usd = v => (v < 0 ? '−$\u00A0' : '$\u00A0') + f$.format(Math.abs(v || 0));
   const pct = v => Math.round((v || 0) * 100) + '%';
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const DIA = { LUNES: 'Lunes', MARTES: 'Martes', MIERCOLES: 'Miércoles', JUEVES: 'Jueves', VIERNES: 'Viernes', SABADO: 'Sábado', DOMINGO: 'Domingo' };
@@ -927,14 +771,19 @@ const UI = (() => {
     try { const r = await fetch(ruta + '?t=' + Date.now(), { cache: 'no-store' }); if (r.ok) return await r.json(); } catch (e) { }
     return null;
   }
+  // Busca en data/ y, si el repositorio tiene los archivos sueltos en la raíz, también ahí
+  async function leerRemotoDoble(nombre) {
+    const [a, b] = await Promise.all([leerRemoto('data/' + nombre), leerRemoto(nombre)]);
+    return [a, b];
+  }
   async function cargarCorte() {
-    const remoto = await leerRemoto(RUTAS.corte), local = leerLS(LS.corte);
-    return [remoto, local].filter(x => x && x.fechas && x.fechas.length)
+    const [r1, r2] = await leerRemotoDoble('corte.json'), local = leerLS(LS.corte);
+    return [r1, r2, local].filter(x => x && x.fechas && x.fechas.length)
       .sort((a, b) => (b.generado || '').localeCompare(a.generado || ''))[0] || null;
   }
   async function cargarHistorial() {
-    const remoto = await leerRemoto(RUTAS.historial), local = leerLS(LS.historial);
-    return VJ.fusionarHistorial(remoto || VJ.historialVacio(), local || VJ.historialVacio());
+    const [r1, r2] = await leerRemotoDoble('historial.json'), local = leerLS(LS.historial);
+    return [r1, r2, local].reduce((h, x) => VJ.fusionarHistorial(h, x || VJ.historialVacio()), VJ.historialVacio());
   }
 
   /* ---------- Grupos y totales ---------- */
@@ -954,7 +803,7 @@ const UI = (() => {
     const c = sub ? r.cumpl : VJ.cumplimiento({ ...r, prg: r.prg || 0 });
     const p = sub ? `<td class="c">${pct(c)}</td>` : `<td class="c"><span class="pct ${claseCumpl(c)}">${pct(c)}</span></td>`;
     return prg + n(r.atendidos) + n(r.ordenes) + n(r.comentadas) + p + n(r.fuera)
-      + `<td class="n">${dinero(r.venta)}</td><td class="n${(r.devol || 0) < 0 ? ' neg' : ' cero'}">${dinero(r.devol)}</td>`;
+      + `<td class="n"${r.montoOrdenes ? ` title="Facturado ${f$.format((r.venta || 0) - r.montoOrdenes)} + órdenes ${f$.format(r.montoOrdenes)}"` : ''}>${dinero(r.venta)}</td><td class="n${(r.devol || 0) < 0 ? ' neg' : ' cero'}">${dinero(r.devol)}</td>`;
   }
   function pintarCuadro(tabla, lomo, grupos, T) {
     let h = '';
@@ -977,16 +826,27 @@ const UI = (() => {
     const txt = esDinero ? usd(Math.abs(d)).replace('−', '') : fN.format(Math.abs(d));
     return ` · <span class="delta ${d > 0 ? 'up' : 'down'}">${d > 0 ? '+' : '−'}${txt}</span>`;
   }
-  function pintarKpis(el, T, { cigarros = 0, facturas = null, previo = null, notaVenta = '', rotVenta = 'Venta del día' } = {}) {
+  function pintarKpis(el, T, { cigarros = 0, facturas = null, previo = null, notaVenta = '', linea = 'base', ventaTodas = 0 } = {}) {
     const p = previo || {};
+    const quinto = linea === 'cig'
+      ? { rot: 'Peso en la venta total', val: pct(ventaTodas ? T.venta / ventaTodas : 0), pie: `de ${usd(ventaTodas)} en todas las líneas`, c: '#747474' }
+      : linea === 'todas'
+        ? { rot: 'Cigarros Bigott incluidos', val: usd(cigarros), pie: T.venta ? `${(cigarros / T.venta * 100).toFixed(1).replace('.', ',')}% de esta venta` : '—', c: '#747474' }
+        : { rot: 'Cigarros Bigott', val: usd(cigarros), pie: 'Se reporta aparte del cuadro', c: '#747474' };
     const k = [
-      { rot: rotVenta, val: usd(T.venta), pie: (notaVenta || (facturas !== null ? `${fN.format(facturas)} facturas` : '')) + deltaTxt(T.venta, p.venta, true), c: 'var(--azul-med)' },
+      { rot: 'Venta del día', val: usd(T.venta), pie: (T.montoOrdenes ? `Facturado ${usd(T.venta - T.montoOrdenes)} + órdenes ${usd(T.montoOrdenes)}` : (notaVenta || (facturas !== null ? `${fN.format(facturas)} facturas` : ''))) + deltaTxt(T.venta, p.venta, true), c: 'var(--azul-med)' },
       { rot: 'Devoluciones', val: usd(T.devol), pie: (T.venta ? `${(Math.abs(T.devol) / T.venta * 100).toFixed(1).replace('.', ',')}% de la venta` : '—'), c: 'var(--rojo)' },
-      { rot: 'Clientes atendidos', val: fN.format(T.atendidos), pie: `de <b>${fN.format(T.prg)}</b> por atender` + deltaTxt(T.atendidos, p.atendidos), c: 'var(--verde)' },
+      { rot: linea === 'cig' ? 'Clientes con cigarros' : 'Clientes atendidos', val: fN.format(T.atendidos), pie: `de <b>${fN.format(T.prg)}</b> por atender` + deltaTxt(T.atendidos, p.atendidos), c: 'var(--verde)' },
       { rot: 'Cumplimiento', val: pct(T.cumpl), pie: `<b>${fN.format(T.fuera)}</b> clientes fuera de ruta`, c: '#F4A200' },
-      { rot: 'Cigarros Bigott', val: usd(cigarros), pie: 'Se reporta aparte del cuadro', c: '#747474' }
+      quinto
     ];
     el.innerHTML = k.map(x => `<div class="kpi" style="--c:${x.c}"><p class="rot">${x.rot}</p><p class="val">${x.val}</p><p class="pie">${x.pie}</p></div>`).join('');
+  }
+  // Selector de línea de servicio (Sin cigarros · Todas las líneas · Bigott y cigarrera)
+  const leerLinea = () => { const l = localStorage.getItem('vjc_linea'); return VJ.LINEAS[l] ? l : 'base'; };
+  function pintarSelectorLinea(el, actual, alCambiar) {
+    el.innerHTML = Object.entries(VJ.LINEAS).map(([k, t]) => `<button class="chip-dia" type="button" data-l="${k}" aria-pressed="${k === actual}"><b>${t}</b></button>`).join('');
+    el.querySelectorAll('button').forEach(b => b.onclick = () => { localStorage.setItem('vjc_linea', b.dataset.l); alCambiar(b.dataset.l); });
   }
 
   /* ---------- Gráficas ---------- */
@@ -1006,7 +866,7 @@ const UI = (() => {
   const tip$ = { callbacks: { label: c => (c.dataset.label ? c.dataset.label + ': ' : '') + '$ ' + f$.format(c.raw) } };
 
   /* ---------- Excel ---------- */
-  function excel(coordinaciones, filas, encabezado, archivo, extras = []) {
+  function excel(coordinaciones, filas, encabezado, archivo) {
     if (typeof XLSX === 'undefined') return;
     const aoa = [[encabezado]], todas = [];
     for (const g of coordinaciones) {
@@ -1022,11 +882,6 @@ const UI = (() => {
     const ws = XLSX.utils.aoa_to_sheet(aoa);
     ws['!cols'] = [{ wch: 24 }, ...ENCAB.map(() => ({ wch: 14 }))];
     const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'CORTE');
-    for (const x of extras) {
-      const w = XLSX.utils.aoa_to_sheet(x.aoa);
-      if (x.cols) w['!cols'] = x.cols.map(wch => ({ wch }));
-      XLSX.utils.book_append_sheet(wb, w, x.nombre.slice(0, 31));
-    }
     XLSX.writeFile(wb, archivo);
   }
 
@@ -1035,17 +890,15 @@ const UI = (() => {
   }
 
   return { LS, RUTAS, $, f$, fN, dinero, usd, pct, esc, DIA, MESES, nombreDia, fechaLarga, mesLargo, hora, fechaHora, titulo, claseCumpl,
-    leerLS, guardarLS, leerRemoto, cargarCorte, cargarHistorial, armarGrupos, pintarCuadro, pintarKpis, grafica, ticks$, tip$, excel, navActual, ENCAB };
+    leerLinea, pintarSelectorLinea, leerLS, guardarLS, leerRemoto, cargarCorte, cargarHistorial, armarGrupos, pintarCuadro, pintarKpis, grafica, ticks$, tip$, excel, navActual, ENCAB };
 })();
 </script>
 <script>
 const { $, fN, f$, usd, pct, esc, LS } = UI;
 const LLAVE = 'DIGIMARKET2026';
 const TIPOS = {
-  ventasMV: { nombre: 'Ventas MobilVendor', req: true, pista: /VENTA|MOBIL|REPORTE/i, vacio: 'Pendiente (ReporteGeneral de MobilVendor)' },
-  ventasB: { nombre: 'Ventas Módulo B', req: true, pista: /VENTA|MODULO/i, vacio: 'Pendiente (ventas de Módulo B)' },
+  ventas: { nombre: 'Ventas del corte', req: true, pista: /VENTA|HOJA1|DINAMICA/i },
   maestro: { nombre: 'Maestro de clientes', req: true, pista: /MAESTRO CLIENTES|MAESTRO/i },
-  ventas: { nombre: 'Consolidado de ventas (formato anterior)', req: false, oculto: true, pista: /VENTA|HOJA1|DINAMICA/i },
   comentarios: { nombre: 'Comentarios MobilVendor', req: false, pista: /COMENT/i },
   ordenes: { nombre: 'Órdenes por facturar', req: false, pista: /ORDEN/i }
 };
@@ -1090,17 +943,14 @@ async function leerArchivo(file) {
   const buf = await file.arrayBuffer();
   if (/\.csv$/i.test(file.name)) {
     const wb = XLSX.read(new TextDecoder('utf-8').decode(buf), { type: 'string', raw: true });
-    const filas = aFilas(wb.Sheets[wb.SheetNames[0]]); let tipo = VJ.detectar(filas);
-    if (tipo === 'ventasMV' && /ORDEN/i.test(file.name)) tipo = 'ordenes';
+    const filas = aFilas(wb.Sheets[wb.SheetNames[0]]); const tipo = VJ.detectar(filas);
     return tipo ? [{ hoja: wb.SheetNames[0], tipo, filas }] : [];
   }
   const vista = XLSX.read(buf, { type: 'array', sheetRows: 35 });
   const porTipo = {};
   for (const h of vista.SheetNames) {
-    let tipo = VJ.detectar(aFilas(vista.Sheets[h]));
+    const tipo = VJ.detectar(aFilas(vista.Sheets[h]));
     if (!tipo) continue;
-    // Ventas de MobilVendor y órdenes por facturar comparten columnas: el nombre decide si dice ORDEN
-    if (tipo === 'ventasMV' && /ORDEN/i.test(h + ' ' + file.name)) tipo = 'ordenes';
     const prev = porTipo[tipo];
     if (!prev || (!TIPOS[tipo].pista.test(prev.hoja) && TIPOS[tipo].pista.test(h))) porTipo[tipo] = { hoja: h, tipo };
   }
@@ -1109,28 +959,14 @@ async function leerArchivo(file) {
   const wb = XLSX.read(buf, { type: 'array', sheets: elegidos.map(x => x.hoja) });
   return elegidos.map(x => ({ ...x, filas: aFilas(wb.Sheets[x.hoja]) }));
 }
-// Un archivo con columnas de MobilVendor puede ser ventas u órdenes: se puede mover de casilla
-const MOVER = { ventasMV: ['ordenes', 'Es de órdenes'], ordenes: ['ventasMV', 'Son ventas'] };
-const hayVentas = () => !!(SLOT.ventasMV || SLOT.ventasB || SLOT.ventas);
 function pintarSlots() {
-  const cruce = SLOT.ventasMV || SLOT.ventasB;
-  $('#slots').innerHTML = Object.entries(TIPOS).filter(([k, t]) => !t.oculto || SLOT[k]).map(([k, t]) => {
+  $('#slots').innerHTML = Object.entries(TIPOS).map(([k, t]) => {
     const s = SLOT[k];
-    let det = s ? `${esc(s.archivo)} › ${esc(s.hoja)} · ${fN.format(s.filas.length)} filas` : (t.vacio || (t.req ? 'Pendiente' : 'Si no lo subes, la columna queda en 0'));
-    if (k === 'ventas' && s) det += cruce ? ' · no se usa: manda el cruce MobilVendor + Módulo B' : ' · se usa porque no hay archivos de MobilVendor ni Módulo B';
-    if ((k === 'ventasMV' || k === 'ventasB') && !s && SLOT.ventas) det = 'No cargado · se usará el consolidado';
-    const mover = s && MOVER[k] ? `<button class="quitar" type="button" data-mover="${k}">${MOVER[k][1]}</button>` : '';
-    const cargar = `<button class="quitar cargar" type="button" data-cargar="${k}">${s ? 'Cambiar' : 'Cargar'}</button>`;
-    return `<li class="slot ${s ? 'listo' : ''}"><span class="punto"></span><b>${t.nombre}<em>${t.req ? 'obligatorio' : 'opcional'}</em></b><span class="btns">${mover}${cargar}${s ? `<button class="quitar" type="button" data-k="${k}">Quitar</button>` : ''}</span><span class="det">${det}</span></li>`;
+    const det = s ? `${esc(s.archivo)} › ${esc(s.hoja)} · ${fN.format(s.filas.length)} filas` : (t.req ? 'Pendiente' : 'Si no lo subes, la columna queda en 0');
+    return `<li class="slot ${s ? 'listo' : ''}"><span class="punto"></span><b>${t.nombre}<em>${t.req ? 'obligatorio' : 'opcional'}</em></b>${s ? `<button class="quitar" type="button" data-k="${k}">Quitar</button>` : ''}<span class="det">${det}</span></li>`;
   }).join('');
-  $('#slots').querySelectorAll('[data-k]').forEach(b => b.onclick = () => { delete SLOT[b.dataset.k]; pintarSlots(); });
-  $('#slots').querySelectorAll('[data-cargar]').forEach(b => b.onclick = () => { CASILLA = b.dataset.cargar; $('#archivo-casilla').click(); });
-  $('#slots').querySelectorAll('[data-mover]').forEach(b => b.onclick = () => {
-    const de = b.dataset.mover, a = MOVER[de][0];
-    const otro = SLOT[a]; SLOT[a] = SLOT[de]; if (otro) SLOT[de] = otro; else delete SLOT[de];
-    pintarSlots();
-  });
-  $('#b-procesar').disabled = !(hayVentas() && SLOT.maestro);
+  $('#slots').querySelectorAll('.quitar').forEach(b => b.onclick = () => { delete SLOT[b.dataset.k]; pintarSlots(); });
+  $('#b-procesar').disabled = !(SLOT.ventas && SLOT.maestro);
 }
 async function recibir(files) {
   const nuevos = [], sinUso = [];
@@ -1151,39 +987,6 @@ async function recibir(files) {
   if (sinUso.length) msg('#m-proc', `No reconocí columnas conocidas en: ${sinUso.join(', ')}.`, false);
   else $('#m-proc').className = 'msg';
 }
-/* ---------- Carga por casilla: el archivo va a la casilla elegida ---------- */
-// Tipos de hoja que sirven para cada casilla (MobilVendor y órdenes comparten columnas; Módulo B y el consolidado también)
-const ACEPTA = { ventasMV: ['ventasMV', 'ordenes'], ordenes: ['ordenes', 'ventasMV'], ventasB: ['ventasB', 'ventas'], ventas: ['ventas', 'ventasB'], maestro: ['maestro'], comentarios: ['comentarios'] };
-const COLUMNAS = {
-  ventasMV: 'RucCliente, NombreVend, PrecioTotal y CodTrans (ReporteGeneral de MobilVendor)',
-  ventasB: 'fecha, documento, rif, nomvend y total_venta_dolar (ventas de Módulo B)',
-  maestro: 'RIF, ASESOR ACTUAL, DIA DE VISITA y ESTATUS',
-  comentarios: 'Ruta (Nombre), Cliente y Acción',
-  ordenes: 'RucCliente, NombreVend y PrecioTotal',
-  ventas: 'total_venta_dolar y rif'
-};
-let CASILLA = null;
-async function cargarEnCasilla(file, k) {
-  ocupado(`Leyendo ${file.name}…`); await pausa();
-  try {
-    const buf = await file.arrayBuffer();
-    const esCsv = /\.csv$/i.test(file.name);
-    const wb0 = esCsv ? XLSX.read(new TextDecoder('utf-8').decode(buf), { type: 'string', raw: true }) : XLSX.read(buf, { type: 'array', sheetRows: 35 });
-    // La hoja cuyo tipo coincide con la casilla; si no, una de tipo compatible
-    let hoja = null;
-    for (const pref of ACEPTA[k]) {
-      hoja = wb0.SheetNames.find(h => VJ.detectar(aFilas(wb0.Sheets[h])) === pref);
-      if (hoja) break;
-    }
-    if (!hoja) throw new Error(`${file.name} no tiene las columnas de ${TIPOS[k].nombre}: se esperan ${COLUMNAS[k]}.`);
-    const wb = esCsv ? wb0 : XLSX.read(buf, { type: 'array', sheets: [hoja] });
-    SLOT[k] = { hoja, tipo: k, filas: aFilas(wb.Sheets[hoja]), archivo: file.name, dedicado: true };
-    $('#m-proc').className = 'msg';
-  } catch (e) { msg('#m-proc', e.message, false); }
-  ocupado(); pintarSlots();
-}
-$('#archivo-casilla').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f && CASILLA) cargarEnCasilla(f, CASILLA); };
-
 const zona = $('#zona');
 $('#archivos').onchange = e => { recibir([...e.target.files]); e.target.value = ''; };
 ['dragenter', 'dragover'].forEach(ev => zona.addEventListener(ev, e => { e.preventDefault(); zona.classList.add('activa'); }));
@@ -1195,25 +998,14 @@ $('#b-procesar').onclick = async () => {
   ocupado('Calculando el cuadro…'); await pausa();
   try {
     const maestro = VJ.procesarMaestro(SLOT.maestro.filas);
-    // Venta = cruce de MobilVendor + Módulo B. El consolidado viejo solo se usa si no hay ninguno de los dos.
-    const mv = SLOT.ventasMV ? VJ.normalizarMV(SLOT.ventasMV.filas) : [];
-    const b = SLOT.ventasB ? VJ.normalizarB(SLOT.ventasB.filas, 'B') : [];
-    const cruce = !!(SLOT.ventasMV || SLOT.ventasB);
-    const lineas = cruce ? mv.concat(b) : VJ.normalizarB(SLOT.ventas.filas, 'MOBILVENDOR');
-    const ventas = VJ.procesarVentas(lineas, maestro);
-    ventas.cruce = cruce;
-    ventas.repetidos = cruce ? VJ.cruceDocumentos(mv, b) : [];
-    ventas.fechasMV = [...new Set(mv.map(l => l.fecha))].sort();
-    ventas.fechasB = [...new Set(b.map(l => l.fecha))].sort();
-    if (!Object.keys(ventas.dias).length) throw new Error('Los archivos de ventas no tienen filas con fecha.');
+    const ventas = VJ.procesarVentas(SLOT.ventas.filas, maestro);
+    if (!Object.keys(ventas.dias).length) throw new Error('El archivo de ventas no tiene filas con fecha.');
     const ultima = Object.keys(ventas.dias).sort().pop();
     const comentarios = SLOT.comentarios ? VJ.procesarComentarios(SLOT.comentarios.filas) : {};
     const ordenes = SLOT.ordenes ? VJ.procesarOrdenes(SLOT.ordenes.filas, ultima) : {};
-    const nombre = s => `${s.archivo} › ${s.hoja}`;
-    const archivos = {};
-    archivos.ventas = cruce ? [SLOT.ventasMV, SLOT.ventasB].filter(Boolean).map(nombre).join(' + ') : nombre(SLOT.ventas);
-    for (const k of ['maestro', 'comentarios', 'ordenes']) if (SLOT[k]) archivos[k] = nombre(SLOT[k]);
-    CORTE = VJ.armarCorte({ maestro, ventas, comentarios, ordenes, archivos });
+    const archivos = Object.fromEntries(Object.entries(SLOT).map(([k, s]) => [k, `${s.archivo} › ${s.hoja}`]));
+    localStorage.setItem('vjc_fuera_real', $('#fuera-real').checked ? '1' : '0');
+    CORTE = VJ.armarCorte({ maestro, ventas, comentarios, ordenes, archivos, fueraReal: $('#fuera-real').checked });
     UI.guardarLS(LS.corte, CORTE);
     pintarResumen(ventas);
     prepararRegistro();
@@ -1224,29 +1016,17 @@ $('#b-procesar').onclick = async () => {
 function pintarResumen(ventas) {
   const filas = CORTE.fechas.map(f => {
     const T = VJ.totales(Object.values(CORTE.dias[f].filas));
-    return `<tr><td>${UI.nombreDia(f, CORTE.dias[f].diaSemana)}</td><td>${fN.format(T.prg)}</td><td>${fN.format(T.atendidos)}</td><td>${f$.format(T.venta)}</td><td>${f$.format(T.devol)}</td><td>${pct(T.cumpl)}</td></tr>`;
+    return `<tr><td>${UI.nombreDia(f, CORTE.dias[f].diaSemana)}</td><td>${fN.format(T.prg)}</td><td>${fN.format(T.atendidos)}</td><td>${T.montoOrdenes ? f$.format(T.montoOrdenes) : '-'}</td><td>${f$.format(T.venta)}</td><td>${f$.format(T.devol)}</td><td>${pct(T.cumpl)}</td></tr>`;
   }).join('');
   const av = [];
-  const M = ventas.modulos || {};
-  const mod = (k, t) => M[k] ? `${t}: ${fN.format(M[k].lineas)} líneas, ${fN.format(M[k].documentos)} documentos, venta ${usd(M[k].venta)}, devolución ${usd(M[k].devol)}, cigarros ${usd(M[k].cig)}` : '';
-  const fuente = ventas.cruce
-    ? `<p class="sub" style="margin-top:10px"><b>Venta por cruce de archivos.</b> ${[mod('MOBILVENDOR', 'MobilVendor'), mod('B', 'Módulo B')].filter(Boolean).map(esc).join('<br>')}</p>`
-    : '<p class="sub" style="margin-top:10px"><b>Venta del consolidado de Excel</b> (formato anterior).</p>';
-  if (ventas.cruce && !SLOT.ventasMV) av.push('Falta Ventas MobilVendor: la venta solo incluye Módulo B.');
-  if (ventas.cruce && !SLOT.ventasB) av.push('Falta Ventas Módulo B: la venta solo incluye MobilVendor.');
-  if (ventas.cruce && SLOT.ventas) av.push('El consolidado de Excel cargado no se usó: la venta sale del cruce de MobilVendor y Módulo B.');
-  if (ventas.repetidos && ventas.repetidos.length) av.push(`${fN.format(ventas.repetidos.length)} número(s) de documento aparecen en los dos módulos (${ventas.repetidos.slice(0, 5).join(', ')}${ventas.repetidos.length > 5 ? '…' : ''}). Revisa que no sea el mismo archivo cargado dos veces.`);
-  if (ventas.fechasMV.length && ventas.fechasB.length) {
-    const soloMV = ventas.fechasMV.filter(f => !ventas.fechasB.includes(f)), soloB = ventas.fechasB.filter(f => !ventas.fechasMV.includes(f));
-    if (soloMV.length) av.push(`Días solo con MobilVendor: ${soloMV.map(f => UI.nombreDia(f)).join(', ')}.`);
-    if (soloB.length) av.push(`Días solo con Módulo B: ${soloB.map(f => UI.nombreDia(f)).join(', ')}.`);
-  }
   const otros = CORTE.coordinaciones.find(g => g.nombre === 'OTROS');
   if (otros) av.push(`Asesores con venta fuera de la división de coordinaciones (van en OTROS): ${otros.asesores.join(', ')}.`);
   if (ventas.sinAsesor) av.push(`${fN.format(ventas.sinAsesor)} cliente(s) sin asesor en el archivo ni en el maestro; se usó el vendedor de la factura.`);
+  if (CORTE.excluidos && CORTE.excluidos.lineas) av.push(`Excluido de todos los cálculos: ${CORTE.excluidos.clientes.join(', ')} (${fN.format(CORTE.excluidos.lineas)} línea(s), ${usd(CORTE.excluidos.monto)}).`);
   if (!CORTE.tieneComentarios) av.push('Sin comentarios de MobilVendor: Visitas comentadas queda en 0.');
   if (!CORTE.tieneOrdenes) av.push('Sin órdenes por facturar: Órdenes queda en 0 y la venta es solo lo facturado.');
-  $('#resumen').innerHTML = fuente + `<div class="tw" style="margin-top:12px"><table class="lista"><thead><tr><th>Día</th><th>Por atender</th><th>Atendidos</th><th>Venta $</th><th>Devol. $</th><th>Cumpl.</th></tr></thead><tbody>${filas}</tbody></table></div>`
+  else av.push(`Las órdenes por facturar se suman a la venta del ${UI.fechaLarga(CORTE.fechas[CORTE.fechas.length - 1]).toLowerCase()}, el día del corte.`);
+  $('#resumen').innerHTML = `<div class="tw" style="margin-top:12px"><table class="lista"><thead><tr><th>Día</th><th>Por atender</th><th>Atendidos</th><th>Órdenes $</th><th>Venta $</th><th>Devol. $</th><th>Cumpl.</th></tr></thead><tbody>${filas}</tbody></table></div>`
     + (av.length ? `<ul class="avisos">${av.map(a => `<li>${esc(a)}</li>`).join('')}</ul>` : '');
 }
 
@@ -1324,7 +1104,8 @@ function cargarGh() {
   const g = UI.leerLS(LS.gh, {});
   if (g.repo) $('#gh-repo').value = g.repo;
   if (g.rama) $('#gh-rama').value = g.rama;
-  if (g.carpeta !== undefined) $('#gh-carpeta').value = g.carpeta;
+  // Los archivos van sueltos en la raíz del repositorio; la carpeta data de versiones anteriores se cambia a la raíz
+  if (g.carpeta !== undefined) $('#gh-carpeta').value = g.carpeta === 'data' ? '' : g.carpeta;
   if (g.token) $('#gh-token').value = g.token;
   if (g.auto !== undefined) $('#gh-auto').checked = g.auto;
 }
@@ -1349,13 +1130,28 @@ async function ghArchivo(g, nombre) {
 }
 async function ghEscribir(g, a, contenido, mensaje) {
   const r = await fetch(a.url, { method: 'PUT', headers: { ...a.h, Accept: 'application/vnd.github+json' }, body: JSON.stringify({ message: mensaje, content: b64(JSON.stringify(contenido)), branch: g.rama, sha: a.sha }) });
+  if (r.status === 403 || r.status === 404) throw new Error('El token puede leer el repositorio pero no escribir. En el token, Permissions → Contents debe estar en Read and write.');
   if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(`No se pudo publicar (${r.status}): ${j.message || 'error desconocido'}.`); }
+}
+// Revisa acceso, rama y token antes de escribir, para explicar con precisión qué falla
+async function verificarRepo(g) {
+  const h = { Authorization: `Bearer ${g.token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+  const r = await fetch(`https://api.github.com/repos/${g.repo}`, { headers: h, cache: 'no-store' });
+  if (r.status === 401) throw new Error('GitHub no acepta el token: está mal copiado o venció. Crea uno nuevo y pégalo completo.');
+  if (r.status === 404) throw new Error(`El token no ve el repositorio ${g.repo}. Revisa que el nombre sea exacto y que el token tenga como propietario (Resource owner) a ${g.repo.split('/')[0]} y en Repository access incluya ${g.repo.split('/')[1]}.`);
+  if (!r.ok) throw new Error(`GitHub respondió ${r.status} al revisar el repositorio.`);
+  const repo = await r.json();
+  const b = await fetch(`https://api.github.com/repos/${g.repo}/branches/${encodeURIComponent(g.rama)}`, { headers: h, cache: 'no-store' });
+  if (b.status === 404) throw new Error(repo.size === 0
+    ? 'El repositorio está vacío. Sube primero los archivos del zip a la raíz (index.html, admin.html, corte.json e historial.json) y vuelve a publicar.'
+    : `La rama ${g.rama} no existe. La rama principal de este repositorio es ${repo.default_branch}; escríbela en el campo Rama.`);
 }
 async function publicar() {
   const g = leerGh();
   if (!ghListo()) { msg('#m-gh', 'Escribe el repositorio como usuario/repositorio y el token para publicar.', false); return; }
   ocupado('Publicando en GitHub…');
   try {
+    await verificarRepo(g);
     const hist = await ghArchivo(g, 'historial.json');
     HIST = VJ.fusionarHistorial(hist.json || VJ.historialVacio(), HIST);
     await ghEscribir(g, hist, HIST, `Histórico de cortes · ${HIST.registros.length} registros`);
@@ -1383,6 +1179,7 @@ $('#b-dl-hist').onclick = () => descargar('historial.json', HIST);
 /* ---------- Inicio ---------- */
 async function iniciar() {
   pintarSlots(); cargarGh();
+  $('#fuera-real').checked = localStorage.getItem('vjc_fuera_real') === '1';
   HIST = await UI.cargarHistorial();
   pintarHist();
 }
